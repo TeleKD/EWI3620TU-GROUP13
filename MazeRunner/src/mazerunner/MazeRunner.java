@@ -178,7 +178,6 @@ public class MazeRunner {
 		updatePlayerMovement(deltaTime);
 	}
 	
-	
 	/**
 	 * updatePlayerMovement(int) updates the player position and oriention
 	 */
