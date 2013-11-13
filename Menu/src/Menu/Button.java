@@ -7,19 +7,31 @@ import com.sun.opengl.util.GLUT;
 
 public class Button extends GameObject{
 	private int maxX,maxY;
-	String text;
+	private String text;
 	
+	/**
+	 * Button constructor
+	 * @param text The text on the button
+	 * @param gl The GL to draw to
+	 * @param minX The left x
+	 * @param maxX the right x
+	 * @param minY the bottom y
+	 * @param maxY the top y
+	 */
 	public Button(String text,GL gl,int minX,int maxX,int minY,int maxY){
 		super(gl,minX,minY);
 		this.text = text;
 		this.maxX = maxX;
 		this.maxY = maxY;
 	}
-	
+	/**
+	 * Draw's the button
+	 */
 	public void draw(){
 		
-		gl.glColor3f(0f, 1f, 0f); // kleur van button
-		// tekenen van de button
+		gl.glColor3f(0f, 1f, 0f); // Color of the button background
+		
+		// Draw's the button background
 		gl.glBegin(GL.GL_QUADS);
 		gl.glVertex2f(x, y);
 		gl.glVertex2f(x+maxX, y);
@@ -29,29 +41,23 @@ public class Button extends GameObject{
 		
 		
 		
-		// hier moet de tekst nog op de button gezet worden
+		// Draw's the text on the button
 		gl.glPushMatrix();
 		GLUT glut = new GLUT();
-		float width = glut.glutStrokeLengthf(GLUT.STROKE_ROMAN, text);
+		float width = glut.glutStrokeLengthf(GLUT.STROKE_ROMAN, text); // the width of the text-string in gl coordinations
+		float borderGap = 15; // Gap between the button border and the text
+		gl.glColor3f(1.0f,0f,0f); // Color of the text
 		
-		gl.glColor3f(1.0f,0f,0f); // kleur van tekst
-		
-		
-		//gl.glWindowPos2d(x+(maxX-x-text.length()*9)/2, y+(maxY-y-1)/2); // *9 omdat Helvetica_18 9 pixels groot is per letter
-		
-		gl.glTranslatef(x+15, y+15, 0);
-		gl.glScalef((maxX-x-30)/width, (maxY-y-30)/100f, 1f);
-		glut.glutStrokeString(GLUT.STROKE_ROMAN, text);
-				
-		
-		//glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
+		gl.glTranslatef(x+borderGap, y+borderGap, 0); // Translation to the button
+		gl.glScalef((maxX-x-borderGap*2)/width, (maxY-y-borderGap*2)/100f, 1f); // Text scale to the button size
+		glut.glutStrokeString(GLUT.STROKE_ROMAN, text); // Draw's the text
 		
 		gl.glPopMatrix();
 	}
 	
 	public void update(){
 		/*
-		 * update functie
+		 * update function
 		 */
 	}
 	
