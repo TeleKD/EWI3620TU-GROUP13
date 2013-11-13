@@ -129,24 +129,11 @@ public class Player extends GameObject {
 			verAngle -= 0.2*control.getdY();
 			
 			// move the player, according to control
-			if (control.getForward() == true){
-				locationX =  locationX-(Math.sin(horAngle*Math.PI/180)*(speed*deltaTime));
-				locationZ =  locationZ-(Math.cos(horAngle*Math.PI/180)*(speed*deltaTime));
-			}
-			
-			if (control.getBack() == true){
-				locationX =  locationX+(Math.sin(horAngle*Math.PI/180)*(speed*deltaTime));
-				locationZ =  locationZ+(Math.cos(horAngle*Math.PI/180)*(speed*deltaTime));
-			}
-			
-			if (control.getRight() == true){
-				locationX =  locationX+(Math.sin((horAngle+90)*Math.PI/180)*(speed*deltaTime));
-				locationZ =  locationZ+(Math.cos((horAngle+90)*Math.PI/180)*(speed*deltaTime));
-			}
-			
-			if (control.getLeft() == true){
-				locationX =  locationX+(Math.sin((horAngle-90)*Math.PI/180)*(speed*deltaTime));
-				locationZ =  locationZ+(Math.cos((horAngle-90)*Math.PI/180)*(speed*deltaTime));
+			if (control.moveDirection != null) {
+				locationX -= speed*deltaTime*
+						Math.sin((horAngle + control.moveDirection)*(Math.PI/180));
+				locationZ -= speed*deltaTime*
+						Math.cos((horAngle + control.moveDirection)*(Math.PI/180));
 			}
 			
 			

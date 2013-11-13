@@ -15,6 +15,7 @@ import javax.media.opengl.glu.GLU;
 public class MazeRunner {
 	static final long serialVersionUID = 7526471155622776147L;
 
+	
 	/*
 	 * **********************************************
 	 * *		attributes and constructor			*
@@ -40,7 +41,6 @@ public class MazeRunner {
 		// Initialise all the objects
 		initObjects(canvas);						
 	}
-	
 	
 	/**
 	 * initializeObjects() creates all the objects needed for the game to start normally.
@@ -78,6 +78,7 @@ public class MazeRunner {
 		player.setControl(input);
 	}
 
+	
 /*
  * **********************************************
  * *		Initialise and draw methods 		*
@@ -162,6 +163,7 @@ public class MazeRunner {
         gl.glFlush();
 	}
 
+	
 /*
  * **********************************************
  * *				Methods						*
@@ -198,9 +200,7 @@ public class MazeRunner {
 			player.locationZ = previousZ;
 		}
 		
-	}
-
-
+	}	
 	
 	/**
 	 * updateCamera() updates the camera position and orientation.

@@ -22,12 +22,8 @@ import javax.media.opengl.GLCanvas;
 public class UserInput extends Control 
 		implements MouseListener, MouseMotionListener, KeyListener
 {
-	// TODO: Add fields to help calculate mouse movement
-	int muisX;
-	int muisY;
-	int muisXnext;
-	int muisYnext;
-	
+	private int locationXMouse, locationYMouse;
+	private int locationXMouseDragged, locationYMouseDragged;
 	
 	/**
 	 * UserInput constructor.
@@ -53,12 +49,30 @@ public class UserInput extends Control
 	@Override
 	public void update()
 	{
-			// update dY and dX
-			dX = muisXnext-muisX;
-			dY = muisYnext-muisY;
-			
-			muisX = muisXnext;
-			muisY = muisYnext;
+		// calculate rotation since previous update
+		dX = locationXMouseDragged - locationXMouse;
+		dY = locationYMouseDragged - locationYMouse;
+		locationXMouse = locationXMouseDragged;
+		locationYMouse = locationYMouseDragged;
+		
+		// calculate walking direction angle (relative to viewing direction)
+		moveDirection = null;
+		if (back == forward) {
+			if (left != right) {
+				if (left) 	moveDirection = 90;
+				else 		moveDirection = -90;}}
+		else {
+			if (left == right) {
+				if(forward) moveDirection = 0;
+				else		moveDirection = 180;}
+			else {
+				if (forward) {
+					if (left)	moveDirection = 45;
+					else		moveDirection = -45;}
+				else {
+					if (left)	moveDirection = 135;
+					else		moveDirection = -135;}}}
+		
 	}
 
 	/*
@@ -70,63 +84,38 @@ public class UserInput extends Control
 	@Override
 	public void mousePressed(MouseEvent event)
 	{
-		// Detect the location where the mouse has been pressed
-		muisX = event.getX();
-		muisY = event.getY();
-		muisXnext = event.getX();
-		muisYnext = event.getY();
-		
+		locationXMouse = event.getX();
+		locationYMouse = event.getY();
+		locationXMouseDragged = locationXMouse;
+		locationYMouseDragged = locationYMouse;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent event)
 	{		
-		//Detect mouse movement while the mouse button is down
-		muisX = muisXnext;
-		muisY = muisYnext;
-		
-		muisXnext = event.getX();
-		muisYnext = event.getY();
-
+		locationXMouseDragged = event.getX();
+		locationYMouseDragged = event.getY();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent event)
-	{
-		//Set forward, back, left and right to corresponding key presses
-		int key = event.getKeyCode();
-		
-		if (key==KeyEvent.VK_UP || key==KeyEvent.VK_W) {
-			forward = true;
-		}
-		else if (key==KeyEvent.VK_DOWN || key==KeyEvent.VK_S) {
-			back = true;
-		}
-		else if (key==KeyEvent.VK_RIGHT || key==KeyEvent.VK_D) {
-			right = true;
-		}
-		else if (key==KeyEvent.VK_LEFT || key==KeyEvent.VK_A) {
-			left = true;
+	{	
+		switch(event.getKeyCode()) {
+		case KeyEvent.VK_W: forward = true; System.out.println("press W");break;
+		case KeyEvent.VK_A: left = true;	System.out.println("press A");break;
+		case KeyEvent.VK_S: back = true;	System.out.println("press S");break;
+		case KeyEvent.VK_D: right = true;	System.out.println("press D");break;
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent event)
 	{
-		//Set forward, back, left and right to corresponding key releases
-		int key = event.getKeyCode();
-		
-		if (key==KeyEvent.VK_UP || key==KeyEvent.VK_W) {
-			forward = false;
-		}
-		else if (key==KeyEvent.VK_DOWN ||key==KeyEvent.VK_S) {
-			back = false;
-		}
-		else if (key==KeyEvent.VK_RIGHT || key==KeyEvent.VK_D) {
-			right = false;
-		}
-		else if (key==KeyEvent.VK_LEFT || key==KeyEvent.VK_A) {
-			left = false;
+		switch(event.getKeyCode()) {
+		case KeyEvent.VK_W: forward = false; System.out.println("release W");break;	
+		case KeyEvent.VK_A: left = false;	 System.out.println("release A");break;
+		case KeyEvent.VK_S: back = false;	 System.out.println("release S");break;	
+		case KeyEvent.VK_D: right = false;	 System.out.println("release D");break;
 		}
 	}
 

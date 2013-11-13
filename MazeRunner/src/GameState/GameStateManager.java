@@ -164,7 +164,6 @@ public class GameStateManager extends Frame implements GLEventListener{
 		}
 	}
 	
-
 	/**
 	 * displayChanged(GLAutoDrawable, boolean, boolean) is called upon whenever the display mode changes.
 	 * <p>

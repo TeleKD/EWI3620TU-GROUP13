@@ -23,6 +23,7 @@ public abstract class Control
 	protected boolean back = false;
 	protected boolean left = false;
 	protected boolean right = false;
+	protected Integer moveDirection;
 	
 	protected int dX = 0;
 	protected int dY = 0;
