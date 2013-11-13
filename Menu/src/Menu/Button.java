@@ -1,11 +1,9 @@
 package Menu;
-import  Game.GameObject;
-
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-public class Button extends GameObject{
+public class Button extends MenuObject{
 	private int maxX,maxY;
 	private String text;
 	

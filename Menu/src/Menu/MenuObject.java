@@ -1,12 +1,12 @@
-package Game;
+package Menu;
 import javax.media.opengl.GL;
 
 
-public abstract class GameObject {
+public abstract class MenuObject {
 	protected int x,y;
 	protected GL gl;
 	
-	public GameObject(GL gl,int x,int y){
+	public MenuObject(GL gl,int x,int y){
 		this.gl = gl;
 		this.x = x;
 		this.y = y;
