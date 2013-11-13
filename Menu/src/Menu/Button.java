@@ -4,7 +4,6 @@ import javax.media.opengl.GL;
 import com.sun.opengl.util.GLUT;
 
 public class Button extends MenuObject{
-	private int maxX,maxY;
 	private String text;
 	
 	/**
@@ -17,24 +16,26 @@ public class Button extends MenuObject{
 	 * @param maxY the top y
 	 */
 	public Button(String text,GL gl,int minX,int maxX,int minY,int maxY){
-		super(gl,minX,minY);
+		super(gl,minX,maxX,minY,maxY);
 		this.text = text;
-		this.maxX = maxX;
-		this.maxY = maxY;
 	}
 	/**
 	 * Draw's the button
 	 */
-	public void draw(){
+	public void draw(boolean selected){
+		if(selected)
+			gl.glColor3f(0f, 1f, 0f); // Color of the button background when selected
+		else 
+			gl.glColor3f(0f, 0f, 1f); // Color of the button background when not selected
 		
-		gl.glColor3f(0f, 1f, 0f); // Color of the button background
+		
 		
 		// Draw's the button background
 		gl.glBegin(GL.GL_QUADS);
-		gl.glVertex2f(x, y);
-		gl.glVertex2f(x+maxX, y);
-		gl.glVertex2f(x+maxX, maxY);
-		gl.glVertex2f(x,maxY);
+		gl.glVertex2f(minX, minY);
+		gl.glVertex2f(maxX, minY);
+		gl.glVertex2f(maxX, maxY);
+		gl.glVertex2f(minX,maxY);
 		gl.glEnd();
 		
 		
@@ -46,8 +47,8 @@ public class Button extends MenuObject{
 		float borderGap = 15; // Gap between the button border and the text
 		gl.glColor3f(1.0f,0f,0f); // Color of the text
 		
-		gl.glTranslatef(x+borderGap, y+borderGap, 0); // Translation to the button
-		gl.glScalef((maxX-x-borderGap*2)/width, (maxY-y-borderGap*2)/100f, 1f); // Text scale to the button size
+		gl.glTranslatef(minX+borderGap, minY+borderGap, 0); // Translation to the button
+		gl.glScalef((maxX-minX-borderGap*2)/width, (maxY-minY-borderGap*2)/100f, 1f); // Text scale to the button size
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, text); // Draw's the text
 		
 		gl.glPopMatrix();
