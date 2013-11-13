@@ -85,7 +85,6 @@ public class UserInput extends Control
 		muisX = muisXnext;
 		muisY = muisYnext;
 		
-		
 		muisXnext = event.getX();
 		muisYnext = event.getY();
 
