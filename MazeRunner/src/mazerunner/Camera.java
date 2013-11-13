@@ -1,3 +1,4 @@
+package mazerunner;
 /**
  * Camera represents the camera player in MazeRunner.
  * <p>

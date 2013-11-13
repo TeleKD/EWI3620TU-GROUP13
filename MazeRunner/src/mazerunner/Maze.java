@@ -1,3 +1,4 @@
+package mazerunner;
 import javax.media.opengl.GL;
 import com.sun.opengl.util.GLUT;
 
@@ -57,7 +58,8 @@ public class Maze implements VisibleObject {
 	}
 	
 	/**
-	 * isWall(double x, double z) checks for a wall by converting the double values to integer coordinates.
+	 * isWall(double x, double z) checks for a wall in a square with edge 0.1*SQUARE_SIZE around the location
+	 * by converting the double values to integer coordinates.
 	 * <p>
 	 * This method first converts the x and z to values that correspond with the grid 
 	 * defined by maze[][]. Then it calls upon isWall(int, int) to check for a wall.
@@ -66,11 +68,14 @@ public class Maze implements VisibleObject {
 	 * @param z		the z-coordinate of the location to check
 	 * @return		whether there is a wall at maze[x][z]
 	 */
-	public boolean isWall( double x, double z )
+	public boolean isWall(double x, double z)
 	{
-		int gX = convertToGridX( x );
-		int gZ = convertToGridZ( z );
-		return isWall( gX, gZ );
+		int gXmin = convertToGridX(x-0.1*SQUARE_SIZE);
+		int gXmax = convertToGridX(x+0.1*SQUARE_SIZE);
+		int gZmin = convertToGridZ(z-0.1*SQUARE_SIZE);
+		int gZmax = convertToGridZ(z+0.1*SQUARE_SIZE);
+		return 	isWall(gXmin, gZmin) || isWall(gXmax, gZmax) ||
+				isWall(gXmin, gZmax) || isWall(gXmax, gZmin);
 	}
 	 
 	/**

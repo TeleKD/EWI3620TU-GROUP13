@@ -1,3 +1,4 @@
+package mazerunner;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -40,6 +41,9 @@ public class MazeRunner extends Frame implements GLEventListener {
 	private Maze maze; 										// The maze.
 	private long previousTime = Calendar.getInstance().getTimeInMillis(); // Used to calculate elapsed time.
 
+	private boolean hitWall;
+	private double previousX, previousZ;
+	
 /*
  * **********************************************
  * *		Initialization methods				*
@@ -276,17 +280,21 @@ public class MazeRunner extends Frame implements GLEventListener {
 	 */
 	private void updateMovement(int deltaTime)
 	{
+		// save current coordinates
+		previousX = player.getLocationX();
+		previousZ = player.getLocationZ();
+		
+		// update
 		player.update(deltaTime);
 		
-		double X = player.getLocationX();
-		double Z = player.getLocationZ();
-		// TODO: implement collision
-		boolean Wall = maze.isWall(X, Z);
+		// check if a wall was hit
+		hitWall = maze.isWall(player.getLocationX(), player.getLocationZ());
 		
-		if (Wall == true){
-			player.update(-1*deltaTime);
-		}
-			
+		// set player back if a wall was hit
+		if (hitWall){
+			player.locationX = previousX;
+			player.locationZ = previousZ;
+		}	
 	}
 
 	/**

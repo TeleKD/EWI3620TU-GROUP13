@@ -1,3 +1,4 @@
+package mazerunner;
 import javax.media.opengl.GL;
 
 /**

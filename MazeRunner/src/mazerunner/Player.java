@@ -1,3 +1,4 @@
+package mazerunner;
 /**
  * Player represents the actual player in MazeRunner.
  * <p>
@@ -120,10 +121,14 @@ public class Player extends GameObject {
 	{
 		if (control != null)
 		{
+			// update control
 			control.update();
 			
-			// TODO: Rotate the player, according to control
+			// rotate the player, according to control
+			horAngle -= 0.2*control.getdX();
+			verAngle -= 0.2*control.getdY();
 			
+			// move the player, according to control
 			if (control.getForward() == true){
 				locationX =  locationX-(Math.sin(horAngle*Math.PI/180)*(speed*deltaTime));
 				locationZ =  locationZ-(Math.cos(horAngle*Math.PI/180)*(speed*deltaTime));
@@ -143,16 +148,6 @@ public class Player extends GameObject {
 				locationX =  locationX+(Math.sin((horAngle-90)*Math.PI/180)*(speed*deltaTime));
 				locationZ =  locationZ+(Math.cos((horAngle-90)*Math.PI/180)*(speed*deltaTime));
 			}
-			
-			
-			
-			horAngle = horAngle + 0.2*control.getdX();
-			verAngle = verAngle + 0.2*control.getdY();
-			
-			
-			// TODO: Move the player, according to control
-			
-			
 			
 			
 		}

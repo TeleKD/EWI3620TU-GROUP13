@@ -1,3 +1,4 @@
+package mazerunner;
 import java.awt.event.*;
 
 import javax.media.opengl.GLCanvas;
@@ -52,13 +53,12 @@ public class UserInput extends Control
 	@Override
 	public void update()
 	{
-		// TODO: Set dX and dY to values corresponding to mouse movement
-			dX = -(muisXnext-(muisX));
-			muisX = muisXnext;
+			// update dY and dX
+			dX = muisXnext-muisX;
+			dY = muisYnext-muisY;
 			
-			dY = -(muisYnext-muisY);
+			muisX = muisXnext;
 			muisY = muisYnext;
-	
 	}
 
 	/*
@@ -70,7 +70,7 @@ public class UserInput extends Control
 	@Override
 	public void mousePressed(MouseEvent event)
 	{
-		// TODO: Detect the location where the mouse has been pressed
+		// Detect the location where the mouse has been pressed
 		muisX = event.getX();
 		muisY = event.getY();
 		muisXnext = event.getX();
@@ -81,7 +81,7 @@ public class UserInput extends Control
 	@Override
 	public void mouseDragged(MouseEvent event)
 	{		
-		// TODO: Detect mouse movement while the mouse button is down
+		//Detect mouse movement while the mouse button is down
 		muisX = muisXnext;
 		muisY = muisYnext;
 		
@@ -94,7 +94,7 @@ public class UserInput extends Control
 	@Override
 	public void keyPressed(KeyEvent event)
 	{
-		// TODO: Set forward, back, left and right to corresponding key presses
+		//Set forward, back, left and right to corresponding key presses
 		int key = event.getKeyCode();
 		
 		if (key==KeyEvent.VK_UP || key==KeyEvent.VK_W) {
@@ -114,7 +114,7 @@ public class UserInput extends Control
 	@Override
 	public void keyReleased(KeyEvent event)
 	{
-		// TODO: Set forward, back, left and right to corresponding key presses
+		//Set forward, back, left and right to corresponding key releases
 		int key = event.getKeyCode();
 		
 		if (key==KeyEvent.VK_UP || key==KeyEvent.VK_W) {
