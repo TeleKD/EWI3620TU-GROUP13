@@ -29,6 +29,7 @@ public class MazeRunner {
 	private Maze maze; 														// The maze.
 	private long previousTime = Calendar.getInstance().getTimeInMillis(); 	// Used to calculate elapsed time.
 	
+	
 /*
  * **********************************************
  * *		Initialization methods				*
