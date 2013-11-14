@@ -14,6 +14,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import Menu.Button;
+import Menu.MainMenu;
 
 import com.sun.opengl.util.Animator;
 
@@ -39,6 +40,7 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 	private byte drawMode = DM_POINT;
 
 	private ArrayList<Point2D.Float> points;
+	private MainMenu menu;
 
 	/**
 	 * When instantiating, a GLCanvas is added for us to play with. An animator
@@ -127,6 +129,8 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 		// We have a simple 2D application, so we do not need to check for depth
 		// when rendering.
 		gl.glDisable(GL.GL_DEPTH_TEST);
+		
+		menu = new MainMenu(gl,0,500,0,300);
 	}
 
 	@Override
@@ -141,9 +145,8 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 		gl.glClearColor(0.95f, 0.95f, 0.95f, 1);
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
-		// Draw the buttons.
-		Button button = new Button("test",gl,0,250,screenHeight-130,screenHeight);
-		button.draw(true);
+		// Draw the menu.
+		menu.draw();
 
 		// Draw a figure based on the current draw mode and user input
 		drawFigure(gl);

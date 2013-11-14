@@ -5,6 +5,7 @@ import com.sun.opengl.util.GLUT;
 
 public class Button extends MenuObject{
 	private String text;
+	private float colorRed,colorGreen,colorBlue;
 	
 	/**
 	 * Button constructor
@@ -15,18 +16,22 @@ public class Button extends MenuObject{
 	 * @param minY the bottom y
 	 * @param maxY the top y
 	 */
-	public Button(String text,GL gl,int minX,int maxX,int minY,int maxY){
-		super(gl,minX,maxX,minY,maxY);
+	public Button(String text,GL gl,int minX,int maxX,int minY,int maxY,float colorRed,float colorGreen,float colorBlue,boolean selected){
+		super(gl,minX,maxX,minY,maxY,selected);
 		this.text = text;
+		this.colorRed = colorRed;
+		this.colorGreen = colorGreen;
+		this.colorBlue = colorBlue;
 	}
+	public Button(){}
 	/**
 	 * Draw's the button
 	 */
-	public void draw(boolean selected){
+	public void draw(){
 		if(selected)
-			gl.glColor3f(0f, 1f, 0f); // Color of the button background when selected
+			gl.glColor3f(1-colorRed, 1-colorGreen, 1-colorBlue); // Color of the button background when selected
 		else 
-			gl.glColor3f(0f, 0f, 1f); // Color of the button background when not selected
+			gl.glColor3f(colorRed, colorGreen, colorBlue); // Color of the button background when not selected
 		
 		
 		
@@ -44,8 +49,12 @@ public class Button extends MenuObject{
 		gl.glPushMatrix();
 		GLUT glut = new GLUT();
 		float width = glut.glutStrokeLengthf(GLUT.STROKE_ROMAN, text); // the width of the text-string in gl coordinations
-		float borderGap = 15; // Gap between the button border and the text
-		gl.glColor3f(1.0f,0f,0f); // Color of the text
+		float borderGap = 30; // Gap between the button border and the text
+		
+		if(selected)
+			gl.glColor3f(colorRed,colorGreen,colorBlue); // Color of the text
+		else
+			gl.glColor3f(1-colorRed,1-colorGreen, 1-colorBlue);
 		
 		gl.glTranslatef(minX+borderGap, minY+borderGap, 0); // Translation to the button
 		gl.glScalef((maxX-minX-borderGap*2)/width, (maxY-minY-borderGap*2)/100f, 1f); // Text scale to the button size
