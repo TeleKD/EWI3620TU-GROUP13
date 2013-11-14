@@ -15,6 +15,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import Menu.MainMenu;
+import Menu.PlayMenu;
 
 import com.sun.opengl.util.Animator;
 
@@ -172,7 +173,7 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener,M
 		// Set the new screen size and adjusting the viewport
 		screenWidth = width;
 		screenHeight = height;
-		buttonSize = height / 10.0f;
+		
 		gl.glViewport(0, 0, screenWidth, screenHeight);
 
 		// Update the projection to an orthogonal projection using the new screen size
@@ -210,23 +211,60 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener,M
 
 	@Override
 	public void mousePressed(MouseEvent me) {
-		switch(menu.getButton(me.getX(),screenHeight-me.getY())){
-			case MainMenu.PLAY:
-				menu.setPlay(true);
+		if(menu.getPlay()){
+			switch(menu.playMenu.getButton(me.getX(),screenHeight-me.getY())){
+				case PlayMenu.NEW:
+					// start new game
 				break;
-			case MainMenu.OPTIONS:
-				// options menu
+				case PlayMenu.LOAD:
+					// load game
 				break;
-			case MainMenu.QUIT:
-				// quit
+				case PlayMenu.BACK:
+					menu.setPlay(false);
 				break;
+			}
 		}
-
+		else if(menu.getOptions()){
+			// options menu
+		}
+		else if(menu.getQuit()){
+			// quit Are you sure?
+		}
+		else{
+			switch(menu.getButton(me.getX(),screenHeight-me.getY())){
+				case MainMenu.PLAY:
+					menu.setPlay(true);
+					break;
+				case MainMenu.OPTIONS:
+					menu.setOptions(true);
+					break;
+				case MainMenu.QUIT:
+					menu.setQuit(true);
+					break;
+			}
+		}
 	}
 	@Override
 	public void mouseMoved(MouseEvent me){
 		if(menu.getPlay()){
-			
+			switch(menu.playMenu.getButton(me.getX(),screenHeight-me.getY())){
+				case PlayMenu.NEW:
+					menu.playMenu.selected(PlayMenu.LOAD,false);
+					menu.playMenu.selected(PlayMenu.BACK,false);
+					menu.playMenu.selected(PlayMenu.NEW,true);
+					break;
+				case PlayMenu.LOAD:
+					menu.playMenu.selected(PlayMenu.NEW,false);
+					menu.playMenu.selected(PlayMenu.BACK,false);
+					menu.playMenu.selected(PlayMenu.LOAD,true);
+					break;
+				case PlayMenu.BACK:
+					menu.playMenu.selected(PlayMenu.NEW,false);
+					menu.playMenu.selected(PlayMenu.LOAD,false);
+					menu.playMenu.selected(PlayMenu.BACK,true);
+					break;
+				default:
+			}
 		}
 		else{
 			switch(menu.getButton(me.getX(),screenHeight-me.getY())){

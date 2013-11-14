@@ -4,7 +4,7 @@ import javax.media.opengl.GL;
 
 public class MainMenu extends MenuObject {
 	private Button butt[]; // ArrayList doesn't work it will generate a lot of runtime Errors in openGL
-	private PlayMenu playMenu;
+	public PlayMenu playMenu;
 	
 	
 	private boolean play;
