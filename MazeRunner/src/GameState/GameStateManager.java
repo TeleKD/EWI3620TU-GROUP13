@@ -14,10 +14,21 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import mazerunner.MazeRunner;
+import mazerunner.UserInput;
 
 import com.sun.opengl.util.Animator;
 
-
+/**
+ * De GameStateManager holds the main function of the game and the main display method. Also it provides
+ * the switching functionality between game states
+ * 
+ * gameStates
+ * 
+ * MENU:	the game is in the menu
+ * INGAME: 	the game is running
+ * PAUSE: 	the game is paused (INGAME displaying is frozen)
+ * 
+ */
 public class GameStateManager extends Frame implements GLEventListener{
 	private static final long serialVersionUID = 4002514451736607431L;
 	
@@ -29,15 +40,16 @@ public class GameStateManager extends Frame implements GLEventListener{
 	 */
 	
 	private int screenWidth = 600, screenHeight = 600;		// Screen size.
-	GLCanvas canvas;										// canvas
+	GLCanvas canvas;										// canvas for drawing
 	GameState gameState;									// current GameState
-	// allocate for the MazeRunner object (INGAME)
-	MazeRunner mazeRunner;
 	
+	MazeRunner mazeRunner;									// INGAME functionality
+	UserInput input;										// Mouse and Keyboard input functionality
+
 	/**
 	 * Initialises the complete game.
 	 * <p>
-	 * MazeRunner extends Java AWT Frame, to function as the window. It creats a canvas on 
+	 * GSM extends Java AWT Frame, to function as the window. It creats a canvas on 
 	 * itself where JOGL will be able to paint the OpenGL graphics. It then initializes all 
 	 * game components and initializes JOGL, giving it the proper settings to accurately 
 	 * display MazeRunner. Finally, it adds itself as the OpenGL event listener, to be able 
@@ -50,6 +62,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// Set the window settings
 		setSize( screenWidth, screenHeight);
 		setBackground( Color.white );
+		setLocationRelativeTo(null);
 		
 		// Set window closing action
 		this.addWindowListener( new WindowAdapter()
@@ -63,8 +76,11 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// Initialise JOGL
 		initJOGL();
 		
-		// Initialise and set a MazeRunner Object
-		mazeRunner = new MazeRunner(canvas);
+		// Initialise and set a UserInput Object
+		input = new UserInput(canvas);
+		
+		// Initialise and set a MazeRunner Object (INGAME)
+		mazeRunner = new MazeRunner(canvas, input);
 		
 		// set visible
 		setVisible(true);
@@ -87,6 +103,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 	private void initJOGL()	{
 		// First, we set up JOGL. We start with the default settings.
 		GLCapabilities caps = new GLCapabilities();
+		
 		// Then we make sure that JOGL is hardware accelerated and uses double buffering.
 		caps.setDoubleBuffered(true);
 		caps.setHardwareAccelerated(true);
@@ -109,17 +126,6 @@ public class GameStateManager extends Frame implements GLEventListener{
 		anim.start();
 	}
 	
-	/**
-	 * initGameState(gl) is a function called to initialise the GameState
-	 * 
-	 * SHOULD EVENTUALLY BE CHANGED TO MENU INSTEAD OF INGAME
-	 */
-	private void initGameState(GL gl) {
-		// TODO: implement menu and change initialisation to MENU
-		mazeRunner.init(gl, screenWidth, screenHeight);
-		gameState = GameState.INGAME;
-	}
-	
 	
 	/*
 	 * **********************************************
@@ -135,10 +141,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 	 * It is <b>very important</b> to realize that there should be no drawing at all in this method.
 	 */
 	public void init(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
-		
 		drawable.setGL( new DebugGL(drawable.getGL() )); 			// We set the OpenGL pipeline to Debugging mode.
-		initGameState(gl);
 	}
 	
 	/**
@@ -152,6 +155,10 @@ public class GameStateManager extends Frame implements GLEventListener{
 	public void display(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 		
+		// update the game status
+		updateGameState(gl);
+
+		// pick the right display function
 		switch (gameState) {
 		case INGAME: mazeRunner.display(gl);
 			break;
@@ -161,6 +168,8 @@ public class GameStateManager extends Frame implements GLEventListener{
 		//TODO: implement pause state
 		case PAUSE:
 			break;
+		default: 
+			System.out.println("default case display loop");
 		}
 	}
 	
@@ -199,13 +208,56 @@ public class GameStateManager extends Frame implements GLEventListener{
 	
 	/*
 	 * **********************************************
+	 * *			updateGameState					*
+	 * **********************************************
+	 */
+	
+	/**	
+	 * updateGameState(GL gl) updates the game status. If the gameState is null (start of the program)
+	 * it initialises gameState.
+	 */
+	private void updateGameState(GL gl) {
+		
+		// gameState initialisation 
+		if (gameState == null) {
+			
+			// TODO: ! change initialisation to MENU !
+			mazeRunner.init(gl, screenWidth, screenHeight);
+			gameState = GameState.INGAME;
+		}
+		
+		/* 
+		 * check the gameState and if a switch is required 
+		 * and then switch the gameState
+		 */
+		else {
+			switch(gameState) {
+			case INGAME:
+				if (input.isPause()) {
+					gameState = GameState.PAUSE;}
+				break;
+			case PAUSE:
+				if (!input.isPause()) {
+					gameState = GameState.INGAME;}
+				break;
+			case MENU:
+				break;
+			default:
+				System.out.println("default case updateGameState loop");
+				break;
+			}
+		}
+	}
+	
+	
+	/*
+	 * **********************************************
 	 * *				  Main						*
 	 * **********************************************
 	 */
+	
 	/**
 	 * Program entry point
-	 * 
-	 * @param args
 	 */
 	public static void main(String[] args) {
 		// Create and run MazeRunner.

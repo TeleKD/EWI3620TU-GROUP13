@@ -20,7 +20,7 @@ public class Player extends GameObject {
 	private double horAngle, verAngle;
 	private double speed;
 	
-	private Control control = null;
+	private Control control;
 	
 	/**
 	 * The Player constructor.
@@ -96,7 +96,6 @@ public class Player extends GameObject {
 	public void setVerAngle(double verAngle) {
 		this.verAngle = verAngle;
 	}
-	
 	/**
 	 * Returns the speed.
 	 * @return the speed

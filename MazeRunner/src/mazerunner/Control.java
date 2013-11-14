@@ -23,6 +23,7 @@ public abstract class Control
 	protected boolean back = false;
 	protected boolean left = false;
 	protected boolean right = false;
+	protected boolean pause = false;
 	protected Integer moveDirection;
 	
 	protected int dX = 0;
@@ -76,6 +77,10 @@ public abstract class Control
 	public int getdY()
 	{
 		return dY;
+	}
+	
+	public boolean isPause() {
+		return pause;
 	}
 	
 	/**

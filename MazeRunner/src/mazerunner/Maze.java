@@ -27,7 +27,7 @@ public class Maze implements VisibleObject {
 	public final double MAZE_SIZE = 10;
 	public final double SQUARE_SIZE = 5;
 
-	private int[][] maze = 
+	private volatile int[][] maze = 
 	{	{  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 		{  1,  0,  0,  0,  0,  0,  0,  0,  0,  1 },
 		{  1,  0,  0,  0,  0,  0,  1,  1,  1,  1 },
@@ -98,12 +98,33 @@ public class Maze implements VisibleObject {
 		return (int)Math.floor( z / SQUARE_SIZE );
 	}
 	
+	/**
+	 * Switches the specified location from wall to no wall and vice versa
+	 * 
+	 * @param x		x-coordinate
+	 * @param z		z-coordinate
+	 */
+	public synchronized void editMaze(int x, int z) {
+		if(maze[x][z] == 0) maze[x][z] = 1;
+		else 				maze[x][z] = 0;
+	}
+	
+	
+	/*
+	 * **********************************************
+	 * *			Drawing functions 				*
+	 * **********************************************
+	 */
+	
+	/**
+	 * maze display function
+	 */
 	public void display(GL gl) {
 		GLUT glut = new GLUT();
 
         // Setting the wall colour and material.
-        float wallColour[] = { 0.5f, 0.0f, 0.7f, 1.0f };				// The walls are purple.
-        gl.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, wallColour, 0);	// Set the materials used by the wall.
+        float wallColour[] = { 0.5f, 0.0f, 0.7f, 1.0f };				// purple.
+        gl.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, wallColour, 0);	// Set the materials
 
         // draw the grid with the current material
 		for( int i = 0; i < MAZE_SIZE; i++ )
@@ -117,7 +138,9 @@ public class Maze implements VisibleObject {
 				gl.glPopMatrix();
 			}
 		}
-		paintSingleFloorTile( gl, MAZE_SIZE * SQUARE_SIZE );			// Paint the floor.
+		
+		// Paint the floor.
+		paintSingleFloorTile( gl, MAZE_SIZE * SQUARE_SIZE );			
 	}
 	
 	/**

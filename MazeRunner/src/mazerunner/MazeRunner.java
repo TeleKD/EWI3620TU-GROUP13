@@ -37,9 +37,12 @@ public class MazeRunner {
 	/**
 	 * Initialises the the INGAME part of the game.
 	 */
-	public MazeRunner(GLCanvas canvas) {
+	public MazeRunner(GLCanvas canvas, UserInput input) {
+		// set input
+		this.input = input;
+		
 		// Initialise all the objects
-		initObjects(canvas);						
+		initObjects(canvas);
 	}
 	
 	/**
@@ -74,8 +77,24 @@ public class MazeRunner {
 		camera = new Camera( player.getLocationX(), player.getLocationY(), player.getLocationZ(), 
 				             player.getHorAngle(), player.getVerAngle() );
 		
-		input = new UserInput(canvas);
+		// set player control
 		player.setControl(input);
+		
+		
+//		///// TESTING EDITMAZE /////
+//		Thread mazeUpdate = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				while (true) {
+//					try {
+//						Thread.sleep(1000);
+//						maze.editMaze(7, 2);
+//					} 
+//					catch (InterruptedException e) {e.printStackTrace();}	
+//				}
+//			}
+//		});
+//		mazeUpdate.start();
 	}
 
 	
