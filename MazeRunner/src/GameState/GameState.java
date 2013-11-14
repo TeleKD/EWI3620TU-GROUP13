@@ -1,4 +1,4 @@
-package GameState;
+package gamestate;
 
 /**
  * Enumeration type for the game status

@@ -1,4 +1,4 @@
-package GameState;
+package gamestate;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -44,6 +44,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 	GameState gameState;									// current GameState
 	
 	MazeRunner mazeRunner;									// INGAME functionality
+	Pause pause;											// Pause functionality
 	UserInput input;										// Mouse and Keyboard input functionality
 
 	/**
@@ -79,8 +80,10 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// Initialise and set a UserInput Object
 		input = new UserInput(canvas);
 		
-		// Initialise and set a MazeRunner Object (INGAME)
+		// Initialise a MazeRunner Object (INGAME)
 		mazeRunner = new MazeRunner(canvas, input);
+		// Initialise a Pause object (PAUSE)
+		pause = new Pause();
 		
 		// set visible
 		setVisible(true);
@@ -160,13 +163,14 @@ public class GameStateManager extends Frame implements GLEventListener{
 
 		// pick the right display function
 		switch (gameState) {
-		case INGAME: mazeRunner.display(gl);
+		case INGAME: 
+			mazeRunner.display(gl);
 			break;
-		// TODO: implement menu state
 		case MENU:
+			// TODO: implement menu state
 			break;
-		//TODO: implement pause state
 		case PAUSE:
+			// TODO: implement menu state
 			break;
 		default: 
 			System.out.println("default case display loop");
@@ -241,9 +245,6 @@ public class GameStateManager extends Frame implements GLEventListener{
 					gameState = GameState.INGAME;}
 				break;
 			case MENU:
-				break;
-			default:
-				System.out.println("default case updateGameState loop");
 				break;
 			}
 		}
