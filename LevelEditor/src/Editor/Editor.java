@@ -16,7 +16,11 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.swing.JFrame;
 
+import org.omg.CORBA.portable.InputStream;
+
 import com.sun.opengl.util.Animator;
+import com.sun.opengl.util.texture.TextureData;
+import com.sun.opengl.util.texture.TextureIO;
 
 
 
@@ -96,6 +100,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 			//knop rechts
 			gl.glColor3f(0.8f, 0.03f, 0f);
 			boxOnScreen(gl, screenWidth-60f, screenHeight-(110f+i*50), 40f, 40f);
+			
 		}
 		
 	}
