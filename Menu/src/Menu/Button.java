@@ -23,7 +23,13 @@ public class Button extends MenuObject{
 		this.colorGreen = colorGreen;
 		this.colorBlue = colorBlue;
 	}
-	public Button(){}
+	/**
+	 * Needed because ArrayList doesn't work and a array needs an default constructor
+	 */
+	public Button(){
+		super(null,-1,-1,-1,-1,false);
+		colorRed = colorGreen = colorBlue = -1;
+	}
 	/**
 	 * Draw's the button
 	 */

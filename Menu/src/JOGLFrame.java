@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
@@ -13,7 +14,6 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
-import Menu.Button;
 import Menu.MainMenu;
 
 import com.sun.opengl.util.Animator;
@@ -24,20 +24,16 @@ import com.sun.opengl.util.Animator;
  * @author Kang
  * 
  */
-public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
+public class JOGLFrame extends Frame implements GLEventListener, MouseListener,MouseMotionListener {
 	static final long serialVersionUID = 7526471155622776147L;
 
 	// Screen size.
 	private int screenWidth = 800, screenHeight = 600;
-	private float buttonSize = screenHeight / 10.0f;
 
 	// A GLCanvas is a component that can be added to a frame. The drawing
 	// happens on this component.
 	private GLCanvas canvas;
 
-	private static final byte DM_POINT = 0;
-	private static final byte DM_LINE = 1;
-	private byte drawMode = DM_POINT;
 
 	private ArrayList<Point2D.Float> points;
 	private MainMenu menu;
@@ -82,6 +78,8 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 		// Also add this class as mouse listener, allowing this class to react
 		// to mouse events that happen inside the GLCanvas.
 		canvas.addMouseListener(this);
+		
+		canvas.addMouseMotionListener(this);
 
 		// An Animator is a JOGL help class that can be used to make sure our
 		// GLCanvas is continuously being re-rendered. The animator is run on a
@@ -148,100 +146,8 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 		// Draw the menu.
 		menu.draw();
 
-		// Draw a figure based on the current draw mode and user input
-		drawFigure(gl);
-
 		// Flush the OpenGL buffer, outputting the result to the screen.
 		gl.glFlush();
-	}
-
-	/**
-	 * A method that draws the top left buttons on the screen.
-	 * 
-	 * @param gl
-	 */
-	private void drawButtons(GL gl) {
-		// Draw the background boxes
-		gl.glColor3f(0, 0.5f, 0f);
-		boxOnScreen(gl, 0.0f, screenHeight - buttonSize, buttonSize);
-
-		gl.glColor3f(0, 0, 0.5f);
-		boxOnScreen(gl, buttonSize, screenHeight - buttonSize, buttonSize);
-
-		// Draw a point on top of the first box
-		gl.glPointSize(5.0f);
-		gl.glColor3f(1.0f, 1.0f, 1.0f);
-		pointOnScreen(gl, buttonSize / 2.0f, screenHeight - buttonSize / 2.0f);
-
-		// Draw a line on top of the second box.
-		gl.glLineWidth(3);
-		gl.glColor3f(1.0f, 1.0f, 1.0f);
-		lineOnScreen(gl, buttonSize + 4.0f, screenHeight - 4.0f,
-				2 * buttonSize - 4.0f, screenHeight - buttonSize + 4.0f);
-	}
-
-	/**
-	 * A method that draws a figure, when the user has inputted enough points
-	 * for the current draw mode.
-	 * 
-	 * @param gl
-	 */
-	private void drawFigure(GL gl) {
-		// Set line and point size, and set color to black.
-		gl.glLineWidth(3);
-		gl.glPointSize(10.0f);
-		gl.glColor3f(0.0f, 0.0f, 0.0f);
-
-		Point2D.Float p1, p2;
-		switch (drawMode) {
-		case DM_POINT:
-			if (points.size() >= 1) {
-				// If the draw mode is "point" and the user has supplied at
-				// least one point, draw that point.
-				p1 = points.get(0);
-				pointOnScreen(gl, p1.x, p1.y);
-			}
-		case DM_LINE:
-			if (points.size() >= 2) {
-				// If the draw mode is "line" and the user has supplied at least
-				// two points, draw a line between those points
-				p1 = points.get(0);
-				p2 = points.get(1);
-				lineOnScreen(gl, p1.x, p1.y, p2.x, p2.y);
-			}
-			break;
-		}
-	}
-
-	/**
-	 * Help method that uses GL calls to draw a point.
-	 */
-	private void pointOnScreen(GL gl, float x, float y) {
-		gl.glBegin(GL.GL_POINTS);
-		gl.glVertex2f(x, y);
-		gl.glEnd();
-	}
-
-	/**
-	 * Help method that uses GL calls to draw a line.
-	 */
-	private void lineOnScreen(GL gl, float x1, float y1, float x2, float y2) {
-		gl.glBegin(GL.GL_LINES);
-		gl.glVertex2f(x1, y1);
-		gl.glVertex2f(x2, y2);
-		gl.glEnd();
-	}
-
-	/**
-	 * Help method that uses GL calls to draw a square
-	 */
-	private void boxOnScreen(GL gl, float x, float y, float size) {
-		gl.glBegin(GL.GL_QUADS);
-		gl.glVertex2f(x, y);
-		gl.glVertex2f(x + size, y);
-		gl.glVertex2f(x + size, y + size);
-		gl.glVertex2f(x, y + size);
-		gl.glEnd();
 	}
 
 	@Override
@@ -280,39 +186,9 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 	 * A function defined in MouseListener. Is called when the pointer is in the GLCanvas, and a mouse button is released.
 	 */
 	public void mouseReleased(MouseEvent me) {
-		// Check if the coordinates correspond to any of the top left buttons
-		boolean buttonPressed = false;
-		if (me.getY() < buttonSize) {
-			if (me.getX() < buttonSize) {
-				// The first button is clicked
-				points.clear();
-				drawMode = DM_POINT;
-				System.out.println("Draw mode: DRAW_POINT");
-				buttonPressed = true;
-			} else if (me.getX() < 2 * buttonSize) {
-				// The second button is clicked
-				points.clear();
-				drawMode = DM_LINE;
-				System.out.println("Draw mode: DRAW_LINE");
-				buttonPressed = true;
-			}
-		}
-
-		// Only register a new point, if the click did not hit any button
-		if (!buttonPressed) {
-
-			if (drawMode == DM_POINT && points.size() >= 1) {
-				// If we're drawing points and one point was stored, reset the points list
-				points.clear();
-			} else if (drawMode == DM_LINE && points.size() >= 2) {
-				// If we're drawing lines and two points were already stored, reset the points list
-				points.clear();
-			}
-
-			// Add a new point to the points list.
-			points.add(new Point2D.Float(me.getX(), screenHeight - me.getY()));
-			System.out.println(me.getX() + " " + (screenHeight - me.getY()));
-		}
+		// Add a new point to the points list.
+		points.add(new Point2D.Float(me.getX(), screenHeight - me.getY()));
+		System.out.println(me.getX() + " " + (screenHeight - me.getY()));
 	}
 
 	@Override
@@ -333,8 +209,51 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// Not needed.
+	public void mousePressed(MouseEvent me) {
+		switch(menu.getButton(me.getX(),screenHeight-me.getY())){
+			case MainMenu.PLAY:
+				menu.setPlay(true);
+				break;
+			case MainMenu.OPTIONS:
+				// options menu
+				break;
+			case MainMenu.QUIT:
+				// quit
+				break;
+		}
 
+	}
+	@Override
+	public void mouseMoved(MouseEvent me){
+		if(menu.getPlay()){
+			
+		}
+		else{
+			switch(menu.getButton(me.getX(),screenHeight-me.getY())){
+			case MainMenu.PLAY:
+				menu.selected(MainMenu.OPTIONS, false);
+				menu.selected(MainMenu.QUIT, false);
+				menu.selected(MainMenu.PLAY, true);
+				break;
+			case MainMenu.OPTIONS:
+				menu.selected(MainMenu.PLAY, false);
+				menu.selected(MainMenu.QUIT, false);
+				menu.selected(MainMenu.OPTIONS, true);
+				break;
+			case MainMenu.QUIT:
+				menu.selected(MainMenu.PLAY, false);
+				menu.selected(MainMenu.OPTIONS, false);
+				menu.selected(MainMenu.QUIT, true);
+				break;
+			default:
+				menu.selected(MainMenu.PLAY, false);
+				menu.selected(MainMenu.OPTIONS, false);
+				menu.selected(MainMenu.QUIT, false);
+			}
+		}
+	}
+	
+	public void mouseDragged(MouseEvent me){
+	// not used
 	}
 }

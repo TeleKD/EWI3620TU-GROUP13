@@ -16,7 +16,6 @@ public abstract class MenuObject {
 		this.maxY = maxY;
 		this.selected = selected;
 	}
-	public MenuObject(){}
 	
 	public int getMinX(){return minX;}
 	public int getMaxX(){return maxX;}
