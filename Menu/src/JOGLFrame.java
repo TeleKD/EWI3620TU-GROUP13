@@ -211,84 +211,11 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener,M
 
 	@Override
 	public void mousePressed(MouseEvent me) {
-		if(menu.getPlay()){
-			switch(menu.playMenu.getButton(me.getX(),screenHeight-me.getY())){
-				case PlayMenu.NEW:
-					// start new game
-				break;
-				case PlayMenu.LOAD:
-					// load game
-				break;
-				case PlayMenu.BACK:
-					menu.setPlay(false);
-				break;
-			}
-		}
-		else if(menu.getOptions()){
-			// options menu
-		}
-		else if(menu.getQuit()){
-			// quit Are you sure?
-		}
-		else{
-			switch(menu.getButton(me.getX(),screenHeight-me.getY())){
-				case MainMenu.PLAY:
-					menu.setPlay(true);
-					break;
-				case MainMenu.OPTIONS:
-					menu.setOptions(true);
-					break;
-				case MainMenu.QUIT:
-					menu.setQuit(true);
-					break;
-			}
-		}
+		menu.start(me.getX(),screenHeight-me.getY());
 	}
 	@Override
 	public void mouseMoved(MouseEvent me){
-		if(menu.getPlay()){
-			switch(menu.playMenu.getButton(me.getX(),screenHeight-me.getY())){
-				case PlayMenu.NEW:
-					menu.playMenu.selected(PlayMenu.LOAD,false);
-					menu.playMenu.selected(PlayMenu.BACK,false);
-					menu.playMenu.selected(PlayMenu.NEW,true);
-					break;
-				case PlayMenu.LOAD:
-					menu.playMenu.selected(PlayMenu.NEW,false);
-					menu.playMenu.selected(PlayMenu.BACK,false);
-					menu.playMenu.selected(PlayMenu.LOAD,true);
-					break;
-				case PlayMenu.BACK:
-					menu.playMenu.selected(PlayMenu.NEW,false);
-					menu.playMenu.selected(PlayMenu.LOAD,false);
-					menu.playMenu.selected(PlayMenu.BACK,true);
-					break;
-				default:
-			}
-		}
-		else{
-			switch(menu.getButton(me.getX(),screenHeight-me.getY())){
-			case MainMenu.PLAY:
-				menu.selected(MainMenu.OPTIONS, false);
-				menu.selected(MainMenu.QUIT, false);
-				menu.selected(MainMenu.PLAY, true);
-				break;
-			case MainMenu.OPTIONS:
-				menu.selected(MainMenu.PLAY, false);
-				menu.selected(MainMenu.QUIT, false);
-				menu.selected(MainMenu.OPTIONS, true);
-				break;
-			case MainMenu.QUIT:
-				menu.selected(MainMenu.PLAY, false);
-				menu.selected(MainMenu.OPTIONS, false);
-				menu.selected(MainMenu.QUIT, true);
-				break;
-			default:
-				menu.selected(MainMenu.PLAY, false);
-				menu.selected(MainMenu.OPTIONS, false);
-				menu.selected(MainMenu.QUIT, false);
-			}
-		}
+		menu.update(me.getX(),screenHeight-me.getY());
 	}
 	
 	public void mouseDragged(MouseEvent me){

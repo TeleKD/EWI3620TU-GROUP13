@@ -28,13 +28,54 @@ public class PlayMenu extends MenuObject {
 			return BACK;
 		return -1;
 	}
-	public void selected(int button,boolean selected){
+	/*public void selected(int button,boolean selected){
 		butt[button].selected(selected);
-	}
+	}*/
 		
 	public void draw(){
 		for(int i = 0; i < 3; i++)
 			butt[i].draw();
 	}
-	public void update(){}
+	/**
+	* This methode is used to check if and what is selected
+	**/
+	public void update(int x,int y){
+		switch(getButton(x,y)){
+			case NEW:
+				butt[LOAD].selected(false);
+				butt[BACK].selected(false);
+				butt[NEW].selected(true);
+				break;
+			case LOAD:
+				butt[NEW].selected(false);
+				butt[BACK].selected(false);
+				butt[LOAD].selected(true);
+				break;
+			case BACK:
+				butt[NEW].selected(false);
+				butt[LOAD.selected(false);
+				butt[BACK].selected(true);
+				break;
+			default:
+				butt[NEW].selected(false);
+				butt[LOAD].selected(false);
+				butt[BACK].selected(false);
+		}
+	}
+	/**
+	* This methode preforms the actions of the buttons
+	**/
+	public void start(int x, int y,boolean play){
+		switch(getButton(x,y)){
+			case NEW:
+				// start new game
+			break;
+			case LOAD:
+				// load game
+			break;
+			case BACK:
+				play = false;
+			break;
+		}
+	}
 }

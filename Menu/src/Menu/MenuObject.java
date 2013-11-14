@@ -26,5 +26,4 @@ public abstract class MenuObject {
 	public boolean isSelected(){return selected;}
 	
 	public abstract void draw();
-	public abstract void update();
 }
