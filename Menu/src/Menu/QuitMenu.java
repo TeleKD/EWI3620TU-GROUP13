@@ -2,7 +2,9 @@ package Menu;
 
 import javax.media.opengl.GL;
 
-public class QuitMenu extends MenuObject {
+import com.sun.opengl.util.GLUT;
+
+public class QuitMenu extends MenuObject implements Menu {
 	private Button butt[];
 	
 	public static final byte YES = 0;
@@ -12,8 +14,8 @@ public class QuitMenu extends MenuObject {
 		super(gl,minX,maxX,minY,maxY,true);
 		
 		butt = new Button[2];
-		butt[0] = new Button("Yes",this.gl,minX,maxX,minY+(maxY-minY)*1/2,maxY,0f,1f,.5f,false);
-		butt[1] = new Button("No",this.gl,minX,maxX,minY+(maxY-minY)/2,minY+(maxY-minY)*1/2,0f,1f,.5f,false);
+		butt[0] = new Button("Yes",this.gl,minX,maxX,minY+(maxY-minY)/4,minY+(maxY-minY)/2,0f,1f,.5f,false);
+		butt[1] = new Button("No",this.gl,minX,maxX,minY,minY+(maxY-minY)/4,0f,1f,.5f,false);
 		
 	}
 	
@@ -27,7 +29,14 @@ public class QuitMenu extends MenuObject {
 	}
 	
 	public void draw(){
-		// need also some text like "Are you sure?"
+		gl.glPushMatrix();
+		GLUT glut = new GLUT();
+		float width = glut.glutStrokeLengthf(GLUT.STROKE_ROMAN, "Are your sure?"); // the width of the text-string in gl coordinations
+		gl.glColor3f(1f,0f,0f);
+		gl.glTranslatef(0, maxY-(maxY-minY)/4, 0); // Translation to upperside of screen
+		gl.glScalef((maxX-minX)/width,(maxY-minY)/4/100f, 1f); // Text scale
+		glut.glutStrokeString(GLUT.STROKE_ROMAN, "Are your sure?"); // Draw's the text
+		gl.glPopMatrix();
 		
 		for(int i = 0; i < 2; i++)
 			butt[i].draw();
@@ -55,30 +64,16 @@ public class QuitMenu extends MenuObject {
 	/**
 	* This methode preforms the actions of the buttons
 	**/
-	public void start(int x, int y, boolean terminate){
+	public void start(int x, int y){
 		switch(getButton(x,y)){
 			case YES:
-				terminate = true;
+				MainMenu.bTerminate = true;
+				System.exit(0); // temp normal this is not what you want because mayby there has thinks to be done before termination
 				break;
 			case NO:
-				terminate = false;
+				MainMenu.bTerminate = false;
+				MainMenu.bQuitMenu = false;
 				break;
 		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
 }

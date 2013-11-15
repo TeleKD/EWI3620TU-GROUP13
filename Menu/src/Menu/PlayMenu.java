@@ -2,7 +2,7 @@ package Menu;
 
 import javax.media.opengl.GL;
 
-public class PlayMenu extends MenuObject {
+public class PlayMenu extends MenuObject implements Menu {
 	private Button butt[];
 	
 	public static final byte NEW = 0;
@@ -53,7 +53,7 @@ public class PlayMenu extends MenuObject {
 				break;
 			case BACK:
 				butt[NEW].selected(false);
-				butt[LOAD.selected(false);
+				butt[LOAD].selected(false);
 				butt[BACK].selected(true);
 				break;
 			default:
@@ -65,7 +65,7 @@ public class PlayMenu extends MenuObject {
 	/**
 	* This methode preforms the actions of the buttons
 	**/
-	public void start(int x, int y,boolean play){
+	public void start(int x, int y){
 		switch(getButton(x,y)){
 			case NEW:
 				// start new game
@@ -74,7 +74,7 @@ public class PlayMenu extends MenuObject {
 				// load game
 			break;
 			case BACK:
-				play = false;
+				MainMenu.bPlayMenu = false;
 			break;
 		}
 	}

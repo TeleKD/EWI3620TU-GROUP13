@@ -15,7 +15,6 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import Menu.MainMenu;
-import Menu.PlayMenu;
 
 import com.sun.opengl.util.Animator;
 
@@ -129,7 +128,7 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener,M
 		// when rendering.
 		gl.glDisable(GL.GL_DEPTH_TEST);
 		
-		menu = new MainMenu(gl,0,500,0,300);
+		menu = new MainMenu(gl,0,300,0,300);
 	}
 
 	@Override
