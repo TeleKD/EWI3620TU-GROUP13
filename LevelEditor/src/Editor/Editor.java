@@ -32,16 +32,15 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 	private int breedte = 0;
 	private int lengte = 0;
 	private int lagen;
-	
 	private int mouseX;
 	private int mouseY;
+
+	int knoplaag = 7;
 
 	private int screenWidth = 1000;
 	private int screenHeight = 600;
 	
 	private Button btn[];
-	public static final byte BTN1 = 0;
-	public static final byte BTN2 = 1;
 	
 	private GLCanvas canvas;
 		
@@ -50,15 +49,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 
 		setSize(screenWidth, screenHeight);
 		setBackground(new Color(0.5f, 0.4f, 0.1f));
-		
-		//Sluiten mogelijk maken
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
-		
 		
 		GLCapabilities caps = new GLCapabilities();
 		caps.setDoubleBuffered(true);
@@ -74,37 +64,64 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 		Animator anim = new Animator(canvas);
 		anim.start();
 		
+		//setDefaultLookAndFeelDecorated(false);
+		setUndecorated(true);
 		setResizable(false);
 		setVisible(true);
 	}
 	
-	
-	
 	//Button definition
 	public void Buttons(GL gl){
 		
-		float buttonsize = screenWidth/24; 
-		float spacing = screenWidth/72;
-		
 		//background for the buttons		
-		Button background = new Button(0, 0, screenWidth/8, screenHeight, 0.8f, 0.03f, 0f);
+		Button background = new Button(gl, 0, 0, screenWidth/8, screenHeight, 0.8f, 0.03f, 0f);
 		background.draw(gl);
 		
-		
-		
-		btn = new Button[2];
-		
-		btn[0] = new Button(screenWidth/72, screenHeight - 2*(spacing+buttonsize), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
-		btn[1] = new Button(buttonsize+2*screenWidth/72, screenHeight - 2*(spacing+buttonsize), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
-		
-		
-		Button button1 = new Button(screenWidth/72, screenHeight - 2*(spacing+buttonsize), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
-		button1.draw(gl);
+		for(int i=0;i<knoplaag*2-1;i++){
+			btn[i].draw(gl);
+		}
 
-		Button button2 = new Button(buttonsize+2*screenWidth/72, screenHeight - 2*(spacing+buttonsize), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
-		button2.draw(gl);
+		
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent me) {
+		int i;
+		System.out.println(me.getX() + " " + me.getY());
+		i = getButton(me.getX(),screenHeight-me.getY());
+		if(i>=0){
+			btn[i].setSelected(true);
+		}
+		System.out.println("Dit is knop "+ i);
+		if(i == (knoplaag-1)*2){
+			System.exit(0);
+		}
+				
+	}
+	
+	public int getButton(int x,int y){
+		int i = -1;
+		for(int it = 0;it<knoplaag*2-1;it++){
+			if(btn[it].getX() < x && x < btn[it].getSizex()+btn[it].getX() && btn[it].getY() < y && y < btn[it].getSizey()+btn[it].getY()){
+				i = it;
+				break;
+			}
+		}
+		return i;
+	}
+	
+	public static void main(String[] args){
+		new Editor();
 	}
 
+	public int getScreenWidth() {
+		return screenWidth;
+	}
+
+	public int getScreenHeight() {
+		return screenHeight;
+	}
+	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 
@@ -165,6 +182,21 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 		// when rendering.
 		gl.glDisable(GL.GL_DEPTH_TEST);	
 		
+		
+		float buttonsize = screenWidth/24; 
+		float spacing = screenWidth/72;
+		
+		btn = new Button[knoplaag*2];
+		
+		for(int i = 0;i<knoplaag;i++){
+			btn[i*2] = new Button(gl, screenWidth/72, screenHeight - (3*(spacing+buttonsize)+(i+1)*(spacing+buttonsize)), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
+		}
+		int nexter = 0;
+		for(int i = 1;i<knoplaag;i++){
+			btn[i+nexter] = new Button(gl, buttonsize+2*screenWidth/72, screenHeight - (3*(spacing+buttonsize)+i*(spacing+buttonsize)), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
+			nexter = nexter + 1;
+		}
+		
 	}
 
 	@Override
@@ -195,59 +227,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent me) {
-		
-		System.out.println(me.getX() + " " + me.getY());
-		
-		boolean pressed = false;
-		
-		switch(getButton(me.getX(),screenHeight-me.getY())){
-		case BTN1:
-			System.out.println("Eindelijk");
-			break;
-		case BTN2:
-			System.out.println("Eindelijk2");
-			break;
-	}
-	}
-	
-	public int getButton(int x,int y){
-		if(btn[0].getX() < x && x < btn[0].getSizex()+btn[0].getX() && btn[0].getY() < y && y < btn[0].getSizey()+btn[0].getY())
-			return BTN1;
-		if(btn[1].getX() < x && x < btn[1].getSizex()+btn[1].getX() && btn[1].getY() < y && y < btn[1].getSizey()+btn[1].getY())
-			return BTN2;
-		return -1;
-	}
-	
-	public static void main(String[] args){
-		new Editor();
-	}
-
-
-
-	public int getScreenWidth() {
-		return screenWidth;
-	}
-
-
-
-	public void setScreenWidth(int screenWidth) {
-		this.screenWidth = screenWidth;
-	}
-
-
-
-	public int getScreenHeight() {
-		return screenHeight;
-	}
-
-
-
-	public void setScreenHeight(int screenHeight) {
-		this.screenHeight = screenHeight;
 	}
 
 }
