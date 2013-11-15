@@ -45,6 +45,13 @@ public class Player extends GameObject {
 		speed = 0.01;
 	}
 	
+	
+	/*
+	 * **********************************************
+	 * *			Setters and Getters				*
+	 * **********************************************
+	 */
+	
 	/**
 	 * Sets the Control object that will control the player's motion
 	 * <p>
@@ -96,6 +103,7 @@ public class Player extends GameObject {
 	public void setVerAngle(double verAngle) {
 		this.verAngle = verAngle;
 	}
+	
 	/**
 	 * Returns the speed.
 	 * @return the speed

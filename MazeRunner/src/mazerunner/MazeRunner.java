@@ -23,10 +23,11 @@ public class MazeRunner {
 	 */
 	
 	private ArrayList<VisibleObject> visibleObjects;						// A list of objects that will be displayed on screen.
-	private Player player;													// The player object.
-	private Camera camera;													// The camera object.
-	private UserInput input;												// The user input object that controls the player.
-	private Maze maze; 														// The maze.
+	private Player player;													// the player
+	private Enemy enemy;													// an enemy
+	private Camera camera;													// the camera
+	private UserInput input;												// user input object controls the game.
+	private Maze maze; 														// the maze
 	private long previousTime = Calendar.getInstance().getTimeInMillis(); 	// Used to calculate elapsed time.
 	
 	
@@ -65,21 +66,31 @@ public class MazeRunner {
 		// We define an ArrayList of VisibleObjects to store all the objects that need to be
 		// displayed by MazeRunner.
 		visibleObjects = new ArrayList<VisibleObject>();
+		
 		// Add the maze that we will be using.
 		maze = new Maze();
-		visibleObjects.add( maze );
+		visibleObjects.add(maze);
 
-		// Initialize the player.
-		player = new Player( 6 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// x-position
-							 maze.SQUARE_SIZE / 2,							// y-position
-							 5 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// z-position
-							 90, 0 );										// horizontal and vertical angle
+		// Initialise the player.
+		player = new Player(6 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// x-position
+							maze.SQUARE_SIZE / 2,							// y-position
+							5 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// z-position
+							90, 0);											// horizontal and vertical angle
 
+		// initialise an enemy and add
+		enemy = new Enemy(2 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// x-position
+						  maze.SQUARE_SIZE / 2,								// y-position
+						  4 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// z-position
+						  45);												// horizontal angle
+		visibleObjects.add(enemy);
+		
+		// set up a camera
 		camera = new Camera( player.getLocationX(), player.getLocationY(), player.getLocationZ(), 
 				             player.getHorAngle(), player.getVerAngle() );
 		
-		// set player control
+		// set player and enemy control
 		player.setControl(input);
+		enemy.setControl(new EnemyAI(enemy, player));
 		
 		
 //		///// TESTING EDITMAZE /////
@@ -186,7 +197,7 @@ public class MazeRunner {
 	
 /*
  * **********************************************
- * *				Methods						*
+ * *			   update methods				*
  * **********************************************
  */
 
@@ -198,6 +209,9 @@ public class MazeRunner {
 	{
 		// Update the player
 		updatePlayerMovement(deltaTime);
+		
+		// Update the enemy
+		updateEnemyMovement(deltaTime);
 	}
 	
 	/**
@@ -221,6 +235,28 @@ public class MazeRunner {
 		}
 		
 	}	
+	
+	/**
+	 * updateEnemyMovement(int) updates the enemys position and orientation
+	 */
+	private void updateEnemyMovement(int deltaTime) {
+		// save current coordinates
+		double previousX = enemy.getLocationX();
+		double previousZ = enemy.getLocationZ();
+		
+		// update
+		enemy.update(deltaTime);
+		
+		// check if a wall was hit
+		boolean hitWall = maze.isWall(enemy.getLocationX(), enemy.getLocationZ());
+		
+		// set player back if a wall was hit
+		if (hitWall){
+			enemy.locationX = previousX;
+			enemy.locationZ = previousZ;
+		}
+		
+	}
 	
 	/**
 	 * updateCamera() updates the camera position and orientation.

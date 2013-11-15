@@ -170,7 +170,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 			// TODO: implement menu state
 			break;
 		case PAUSE:
-			// TODO: implement menu state
+			pause.display(gl);// TODO: implement menu state
 			break;
 		default: 
 			System.out.println("default case display loop");
