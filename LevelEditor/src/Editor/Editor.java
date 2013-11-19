@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 
+import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
 
 import javax.media.opengl.GL;
@@ -15,13 +16,14 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import com.sun.opengl.util.Animator;
 
 
 
 
-public class Editor extends JFrame implements GLEventListener, MouseListener {
+public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener {
 
 	//Graphic related variables
 	private GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -30,17 +32,19 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 	private GLCanvas canvas;
 	
 	//Maze related variables
-	private int mazeX = 50;						//number of X-squares, 10 entered for testing
+	private int mazeX = 10;						//number of X-squares, 10 entered for testing
 	private int mazeY = mazeX;
 	private int levels;									//number of levels in the maze
 	private int knoplaag = 7;
 	private float mazeL = screenWidth/8;					//Left bound of mazeDrawingWindow
 	private float mazeR = screenWidth-screenWidth/16;		//Right bound of mazeDrawingWindow
+	
 	//creates a level with walls on the borders
 	//This is only for testing purposes TODO create a level in the JFrame popup when the user
 	//clicks the "new level" button, then find a way to correspond that level to 1 of the 10 levels buttons
 	Level level = new Level(mazeX,mazeY);
-		
+	private float gridBorder = (((mazeR-mazeL)-mazeX*level.buttonsizex)/2);
+	
 	//Button related
 	private Button btn[];
 	private Button back[];
@@ -57,6 +61,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 		add(canvas);
 		canvas.addGLEventListener(this);
 		canvas.addMouseListener(this);
+		canvas.addMouseMotionListener(this);
 		Animator anim = new Animator(canvas);
 		anim.start();
 		setUndecorated(true);
@@ -208,13 +213,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 					btn[j].setSelected(false);
 				}
 			}
-			
 		}
+		
 		System.out.println("Dit is knop "+ i);
 		if(i == (knoplaag-1)*2){
 			System.exit(0);
 		}
-				
 	}
 
 	@Override
@@ -224,7 +228,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent me) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -242,10 +246,40 @@ public class Editor extends JFrame implements GLEventListener, MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		if (btn[0].selected == true){
-			//TODO check if the mouse is in a square in the level and if so, change the level[x][y] to 1!
+	public void mouseDragged(MouseEvent me){
+		//System.out.println("Versleept");
+		if(btn[0].selected || SwingUtilities.isRightMouseButton(me)){
+			mousePressed(me);
 		}
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent me) {
+		double squareX = Math.floor(((me.getX() - (mazeL + gridBorder))/level.buttonsizex)+mazeX/2);   //waarom mazeX/2?
+		double squareY = Math.floor(((me.getY())/level.buttonsizex));
+		int X = (int) squareX;
+		int Y = mazeY - (int) squareY;
+
+		//Wall Draw
+		if (btn[0].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeY && squareY >= 0){
+			System.out.println("Hier kan getekent worden");
+			level.level[X][Y-1] = 1;
+		}
+		
+		if(SwingUtilities.isRightMouseButton(me)){
+			level.level[X][Y-1] = 0;
+		}
+		
+		//TEST
+		if (btn[11].selected == true){
+			System.out.println(level.toString());
+		}	
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 

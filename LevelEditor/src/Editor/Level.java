@@ -4,9 +4,11 @@ import javax.media.opengl.GL;
 
 public class Level {
 	
-	private int[][] level;
-	int x;
-	int y;
+	protected int[][] level;
+	private int x;
+	private int y;
+	float buttonsizey;
+	float buttonsizex;
 	
 	//creates a level with borders at the edges of the matrix
 	public Level(int x, int y){
@@ -22,15 +24,16 @@ public class Level {
 			}
 		}
 	}
-	
+		
 	//draws the level on the specified location
 	public void draw(GL gl, float startx, float starty, float width, float height){
 		
 	//TODO vakjes vierkant maken en goed centreren
 		//TODO testen welke grootte maze nog werkbaar is en of zoom en panfunctie vereist zijn
 		
-		float buttonsizex = width/x;
-		float buttonsizey = height/y;
+		//float buttonsizex = width/x;
+		buttonsizey = height/y;
+		buttonsizex = buttonsizey;
 		
 		for(int i = 0; i < x; i++){
 			for(int j = 0; j < y; j++){
@@ -46,10 +49,10 @@ public class Level {
 				//filling the squares
 				gl.glBegin(GL.GL_QUADS);
 				//clockwise
-				gl.glVertex2f(startx+i*buttonsizex, (j+1)*buttonsizey);
-				gl.glVertex2f(startx+(i+1)*buttonsizex, (j+1)*buttonsizey);
-				gl.glVertex2f(startx+(i+1)*buttonsizex, (j)*buttonsizey);
-				gl.glVertex2f(startx+i*buttonsizex, (j)*buttonsizey);
+				gl.glVertex2f(startx+((width-x*buttonsizex)/2)+i*buttonsizex, (j+1)*buttonsizey);
+				gl.glVertex2f(startx+((width-x*buttonsizex)/2)+(i+1)*buttonsizex, (j+1)*buttonsizey);
+				gl.glVertex2f(startx+((width-x*buttonsizex)/2)+(i+1)*buttonsizex, (j)*buttonsizey);
+				gl.glVertex2f(startx+((width-x*buttonsizex)/2)+i*buttonsizex, (j)*buttonsizey);
 				gl.glEnd();
 			}
 		}
@@ -63,16 +66,16 @@ public class Level {
 		//vertical lines of the grid
 		for(int i = 0; i <= x; i++){
 			gl.glBegin(GL.GL_LINES);
-			gl.glVertex2f(startx+i*buttonsizex, 0);
-			gl.glVertex2f(startx+i*buttonsizex, height);
+			gl.glVertex2f(startx+((width-x*buttonsizex)/2)+i*buttonsizex, 0);
+			gl.glVertex2f(startx+((width-x*buttonsizex)/2)+i*buttonsizex, height);
 			gl.glEnd();
 		}
 		
 		//horizontal lines of the grid
 		for(int i = 0; i <= y; i++){
 			gl.glBegin(GL.GL_LINES);
-			gl.glVertex2f(startx, i*buttonsizey);
-			gl.glVertex2f(startx+width, i*buttonsizey);
+			gl.glVertex2f(startx+((width-x*buttonsizex)/2), i*buttonsizey);
+			gl.glVertex2f(startx+width-((width-x*buttonsizex)/2), i*buttonsizey);
 			gl.glEnd();
 		}
 		//End of drawing the grid
@@ -93,7 +96,8 @@ public class Level {
 		// TODO Auto-generated method stub
 
 	}
-	
-	
 
+	public float getButtonsizex() {
+		return buttonsizex;
+	}
 }
