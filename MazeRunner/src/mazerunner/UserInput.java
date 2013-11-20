@@ -1,4 +1,5 @@
 package mazerunner;
+
 import gamestate.GameState;
 
 import java.awt.Point;
@@ -9,8 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.media.opengl.GLCanvas;
-
-import Menu.MainMenu;
 
 /**
  * The UserInput class is an extension of the Control class. It also implements three 
@@ -27,13 +26,16 @@ import Menu.MainMenu;
 public class UserInput extends Control 
 		implements MouseListener, MouseMotionListener, KeyListener
 {
-	private MainMenu menu;
 	private GameState gameState;
 	
 	private int locationXMouse, locationYMouse;
 	private int locationXMouseDragged, locationYMouseDragged;
+	protected int mouseX, mouseY;
+	protected boolean mouseClicked;
 	
-	private int screenHeight;
+	@SuppressWarnings("unused")
+	private int screenHeight, screenWidth;
+	private boolean newGame = true;
 	
 	/**
 	 * UserInput constructor.
@@ -43,13 +45,14 @@ public class UserInput extends Control
 	 * 
 	 * @param canvas The GLCanvas to which to add the listeners.
 	 */
-	public UserInput(GLCanvas canvas, int screenHeight)
+	public UserInput(GLCanvas canvas, int screenHeight, int screenWidth)
 	{
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
 		canvas.addKeyListener(this);
 		
 		this.screenHeight = screenHeight;
+		this.screenWidth = screenWidth;
 	}
 	
 	/*
@@ -105,7 +108,7 @@ public class UserInput extends Control
 			locationYMouseDragged = locationYMouse;}
 		
 		if (gameState == GameState.MENU) {
-			menu.start(event.getX(), screenHeight - event.getY());}
+			mouseClicked = true;}
 	}
 
 	@Override
@@ -121,7 +124,8 @@ public class UserInput extends Control
 	public void mouseMoved(MouseEvent event)
 	{
 		if (gameState == GameState.MENU) {
-			menu.update(event.getX(), screenHeight - event.getY());}
+			mouseX = event.getX();
+			mouseY =	screenHeight - event.getY();}
 	}
 	
 	@Override
@@ -159,6 +163,77 @@ public class UserInput extends Control
 
 	/*
 	 * **********************************************
+	 * *			 Getters and setters			*
+	 * **********************************************
+	 */
+	
+	/**
+	 * @return Returns current mouse X location
+	 */
+	public int getMouseX() {
+		return mouseX;
+	}
+	
+	/**
+	 * @return Returns current mouse Y location
+	 */
+	public int getMouseY() {
+		return mouseY;
+	}
+
+	/**
+	 * @return Returns true if mouse was clicked
+	 */
+	public boolean wasMouseClicked() {
+		return mouseClicked;
+	}
+	
+	/**
+	 * resets the mouse to not clicked
+	 */
+	public void resetMouseClicked() {
+		mouseClicked = false;
+	}
+	
+	/**
+	 * sets the new game variable
+	 */
+	public void setNewGame(boolean newGame) {
+		this.newGame = newGame;
+	}
+	
+	/**
+	 * checks if a new game has to be started
+	 */
+	public boolean isNewGame() {
+		return newGame;
+	}
+	
+	/**
+	 * @return the current gameState
+	 */
+	public GameState getGameState() {
+		return gameState;
+	}
+	
+	/**
+	 * set the current gameState
+	 */
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+	
+	/**
+	 * set the screen Dimensions
+	 */
+	public void setScreenDimensions(int screenHeight, int screenWidth) {
+		this.screenHeight = screenHeight;
+		this.screenWidth = screenWidth;
+	}
+	
+	
+	/*
+	 * **********************************************
 	 * *		Unused event handlers				*
 	 * **********************************************
 	 */
@@ -166,6 +241,7 @@ public class UserInput extends Control
 	@Override
 	public void keyTyped(KeyEvent event)
 	{
+		
 	}
 
 	@Override
@@ -187,24 +263,4 @@ public class UserInput extends Control
 	public void mouseReleased(MouseEvent event)
 	{
 	}
-
-	public GameState getGameState() {
-		return gameState;
-	}
-	
-	public void setGameState(GameState gameState) {
-		this.gameState = gameState;
-	}
-
-	
-	public void setMenu(MainMenu menu) {
-		this.menu = menu;
-	}
-
-	
-	public void setScreenHeight(int screenHeight) {
-		this.screenHeight = screenHeight;
-	}
-
-
 }

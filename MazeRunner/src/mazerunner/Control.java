@@ -59,7 +59,7 @@ public abstract class Control
 	{
 		return right;
 	}
-	
+
 	/**
 	 * Gets the amount of rotation desired on the horizontal plane.
 	 * @return The horizontal rotation.

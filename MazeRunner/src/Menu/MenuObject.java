@@ -1,19 +1,16 @@
 package Menu;
 
-import javax.media.opengl.GL;
-
-
-public abstract class MenuObject {
+public abstract class MenuObject implements MenuInterface{
 	protected int minX,minY;
 	protected int maxX,maxY;
 	protected boolean selected;
 	
-	public MenuObject(int minX,int maxX,int minY,int maxY,boolean selected){
+	public MenuObject(int minX,int maxX,int minY,int maxY){
 		this.minX = minX;
 		this.maxX = maxX;
 		this.minY = minY;
 		this.maxY = maxY;
-		this.selected = selected;
+		this.selected = true;
 	}
 	
 	public int getMinX(){return minX;}
@@ -21,8 +18,6 @@ public abstract class MenuObject {
 	public int getMinY(){return minY;}
 	public int getMaxY(){return maxY;}
 	
-	public void selected(boolean select){selected = select;}
+	public void setSelected(boolean select){selected = select;}
 	public boolean isSelected(){return selected;}
-	
-	public abstract void display(GL gl);
 }

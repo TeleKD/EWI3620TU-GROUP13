@@ -6,139 +6,176 @@ import javax.media.opengl.GL;
 
 import mazerunner.UserInput;
 
-public class MainMenu extends MenuObject implements Menu {
+public class MainMenu extends MenuObject implements MenuInterface{
 	
 	private UserInput input;
 	
-	private Button butt[];
+	private Button buttons[];
 	private PlayMenu playMenu;
 	private OptionsMenu optionsMenu;
 	private QuitMenu quitMenu;
 	
-	public static boolean bPlayMenu;
-	public static boolean bOptionsMenu;
-	public static boolean bQuitMenu;
-	public static boolean bTerminate;
+	public MenuState menuState;
 	
 	public static final byte PLAY = 0;
 	public static final byte OPTIONS = 1;
 	public static final byte QUIT = 2;
 	
+	int x,y;
 	
+	/**
+	 * Constructor creates menu objects
+	 */
 	public MainMenu(UserInput input, int minX,int maxX,int minY,int maxY){
-		super(minX,maxX,minY,maxY,true);
+		super(minX,maxX,minY,maxY);
 		
-		bPlayMenu = false;
-		bOptionsMenu = false;
-		bQuitMenu = false;
-		bTerminate = false;
+		// set the menu state to MAIN
+		menuState = MenuState.MAIN;
 		
+		// create sub menus
 		playMenu = new PlayMenu(minX,maxX,minY,maxY);
 		optionsMenu = new OptionsMenu(minX,maxX,minY,maxY);
 		quitMenu = new QuitMenu(minX,maxX,minY,maxY);
 		
-		butt = new Button[3];
-		butt[0] = new Button("Play",minX,maxX,minY+(maxY-minY)*2/3,maxY,0f,1f,.5f,false);
-		butt[1] = new Button("Options",minX,maxX,minY+(maxY-minY)/3,minY+(maxY-minY)*2/3,0f,1f,.5f,false);
-		butt[2] = new Button("Quit",minX,maxX,minY,minY+(maxY-minY)/3,0f,1f,.5f,false);
+		// create menu buttons
+		buttons = new Button[3];
+		buttons[0] = new Button("Play",minX,maxX,minY+(maxY-minY)*2/3,maxY,0f,1f,.5f);
+		buttons[1] = new Button("Options",minX,maxX,minY+(maxY-minY)/3,minY+(maxY-minY)*2/3,0f,1f,.5f);
+		buttons[2] = new Button("Quit",minX,maxX,minY,minY+(maxY-minY)/3,0f,1f,.5f);
 		
+		// set input object
 		this.input = input;
 	}
 	
+	/**
+	 * Returns the value of the button hovered over
+	 */
 	public int getButton(int x,int y){
-		if(butt[0].minX < x && x < butt[0].maxX && butt[0].minY < y && y < butt[0].maxY)
+		if(buttons[0].minX < x && x < buttons[0].maxX && buttons[0].minY < y && y < buttons[0].maxY)
 			return PLAY;
-		if(butt[1].minX < x && x < butt[1].maxX && butt[1].minY < y && y < butt[1].maxY)
+		if(buttons[1].minX < x && x < buttons[1].maxX && buttons[1].minY < y && y < buttons[1].maxY)
 			return OPTIONS;
-		if(butt[2].minX < x && x < butt[2].maxX && butt[2].minY < y && y < butt[2].maxY)
+		if(buttons[2].minX < x && x < buttons[2].maxX && buttons[2].minY < y && y < buttons[2].maxY)
 			return QUIT;
 		return -1;
 	}
 	
+	
+	/*
+	 * **********************************************
+	 * *			   drawing methods				*
+	 * **********************************************
+	 */
+	
+	/**
+	 * Select the current display method
+	 */
 	public void display(GL gl){
-		if(bPlayMenu)
-			playMenu.display(gl);
-		else if(bOptionsMenu)
+		
+		switch(menuState) {
+		case MAIN:
+			displayMain(gl);
+			break;
+		case OPTIONS:
 			optionsMenu.display(gl);
-		else if(bQuitMenu)
+			break;
+		case PLAY:
+			playMenu.display(gl);
+			break;
+		case QUIT:
 			quitMenu.display(gl);
-		else{
-			butt[0].display(gl);
-			butt[1].display(gl);
-			butt[2].display(gl);
-		}
-		
-		if (playMenu.toGame == true) {
-			input.setGameState(GameState.INGAME);
-			playMenu.toGame = false;
+			break;
 		}
 	}
 	
-	public void setPlay(boolean set){
-		bPlayMenu = set;}
+	/**
+	 * Draw the menu
+	 */
+	private void displayMain(GL gl) {
+		for (Button b : buttons) {
+			b.display(gl);}
+	}
+
 	
-	public void setOptions(boolean set){
-		bOptionsMenu = set;}
-	
-	public void setQuit(boolean set){
-		bQuitMenu = set;}
-	
-	public boolean getPlay(){
-		return bPlayMenu;}
-	
-	public boolean getOptions(){
-		return bOptionsMenu;}
-	
-	public boolean getQuit(){
-		return bQuitMenu;}
-	
+	/*
+	 * **********************************************
+	 * *			   update methods				*
+	 * **********************************************
+	 */
 	
 	/**
-	* This methode is used to check if and what is selected
+	 * Get the update variables and select the current update method
+	 */
+	public void update(){
+		x = input.getMouseX();
+		y = input.getMouseY();
+		
+		switch(menuState) {
+		case MAIN:		updateMain(x,y); break;
+		case OPTIONS:	optionsMenu.update(x,y); break;
+		case PLAY:		playMenu.update(x,y); break;
+		case QUIT:		quitMenu.update(x,y); break;}
+		
+		if(input.wasMouseClicked()) {
+			input.resetMouseClicked();
+			buttonPressed(x,y);}
+	}
+	
+	/**
+	 * Update the menu
+	 */
+	private void updateMain(int x, int y) {
+		// set all the buttons to false
+		for (int i=0; i<buttons.length; i++) {
+			buttons[i].setSelected(false);}
+		
+		// set selected button to true
+		switch(getButton(x,y)){
+		case PLAY: 		buttons[PLAY].setSelected(true); break;
+		case OPTIONS: 	buttons[OPTIONS].setSelected(true);	break;
+		case QUIT:		buttons[QUIT].setSelected(true); break;}
+	}
+
+	
+	/*
+	 * **********************************************
+	 * *			   buttonPressed				*
+	 * **********************************************
+	 */
+	
+	/**
+	* This method performs the correct actionz when a button is pressed
 	**/
-	public void update(int x,int y){
+	public void buttonPressed(int x, int y){
 		
-		if		(bPlayMenu)		playMenu.update(x,y);
-		else if	(bOptionsMenu)	optionsMenu.update(x,y);
-		else if	(bQuitMenu)		quitMenu.update(x,y);
-		
-		else{
-			// set all the buttons to false
-			for (int i=0; i<butt.length; i++) {
-				butt[i].selected(false);}
+		switch(menuState) {
+		case MAIN:
+			switch(getButton(x,y)) {
+			case PLAY: 		menuState = MenuState.PLAY; break;
+			case OPTIONS: 	menuState = MenuState.OPTIONS; break;
+			case QUIT: 		menuState = MenuState.QUIT; break;}
+			break;
 			
-			// set selected button to true
-			switch(getButton(x,y)){
-			case PLAY: 		butt[PLAY].selected(true);		break;
-			case OPTIONS: 	butt[OPTIONS].selected(true);	break;
-			case QUIT:		butt[QUIT].selected(true);		break;}
-		}
-	}
-	/**
-	* This methode preforms the actions of the buttons
-	**/
-	public void start(int x,int y){
-		if(bPlayMenu){
-			playMenu.start(x,y);
-		}
-		else if(bOptionsMenu){
-			optionsMenu.start(x,y);
-		}
-		else if(bQuitMenu){
-			quitMenu.start(x,y);
-		}
-		else{
-			switch(getButton(x,y)){
-				case PLAY:
-					bPlayMenu = true;
-					break;
-				case OPTIONS:
-					bOptionsMenu = true;
-					break;
-				case QUIT:
-					bQuitMenu = true;
-					break;
-			}
+		case OPTIONS:
+			switch(optionsMenu.getButton(x, y)) {
+			case OptionsMenu.BACK:	menuState = MenuState.MAIN; break;}
+			break;
+			
+		case PLAY:
+			switch(playMenu.getButton(x, y)) {
+			case PlayMenu.NEW:		
+				input.setGameState(GameState.INGAME); 
+				input.setNewGame(true);
+				break;
+			case PlayMenu.CONTINUE: input.setGameState(GameState.INGAME);
+			case PlayMenu.BACK: 	menuState = MenuState.MAIN; break;}
+			break;
+			
+		case QUIT:
+			switch(quitMenu.getButton(x, y)) {
+			case QuitMenu.YES: 		System.exit(0);	break;			
+			case QuitMenu.NO: 		menuState = MenuState.MAIN; break;}
+			break;
 		}
 	}
 }

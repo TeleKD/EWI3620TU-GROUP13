@@ -24,8 +24,8 @@ import com.sun.opengl.util.GLUT;
  */
 public class Maze implements VisibleObject {
 	
-	public final double MAZE_SIZE = 10;
-	public final double SQUARE_SIZE = 5;
+	public final static double MAZE_SIZE = 10;
+	public final static double SQUARE_SIZE = 5;
 
 	private volatile int[][] maze = 
 	{	{  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },

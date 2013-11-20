@@ -79,13 +79,10 @@ public class GameStateManager extends Frame implements GLEventListener{
 		initJOGL();
 		
 		// Initialise and set a UserInput Object
-		input = new UserInput(canvas, screenHeight);
+		input = new UserInput(canvas, screenHeight, screenWidth);
 		
-		// Initialise a MazeRunner Object (INGAME)
-		mazeRunner = new MazeRunner(input);
 		// Initialise a Menu Object (MENU)
 		menu = new MainMenu(input, 0, 300, 0, 300);
-		input.setMenu(menu);
 		
 		// set visible
 		setVisible(true);
@@ -173,9 +170,10 @@ public class GameStateManager extends Frame implements GLEventListener{
 			mazeRunner.display(gl);	// display mazerunner game
 			break;
 		case MENU:
-			switchTo2D(gl);
-			menu.display(gl);
-			switchTo3D(gl);
+			switchTo2D(gl);			// switch to 2D
+			menu.update();			// update menu
+			menu.display(gl);		// display menu
+			switchTo3D(gl);			// switch to 3D
 			break;
 		case PAUSE:
 			mazeRunner.display(gl);			// display frozen mazerunner game
@@ -217,7 +215,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// Setting the new screen size and adjusting the viewport.
 		screenWidth = width;
 		screenHeight = height;
-		input.setScreenHeight(screenHeight);
+		input.setScreenDimensions(screenHeight, screenWidth);
 		gl.glViewport( 0, 0, screenWidth, screenHeight );
 		
 		// Set the new projection matrix.
@@ -290,17 +288,18 @@ public class GameStateManager extends Frame implements GLEventListener{
 	 * it initialises gameState.
 	 */
 	private void updateGameState(GL gl) {
+		// setup new game if required
+		if (input.isNewGame()) {
+			mazeRunner = new MazeRunner(input);
+			input.setNewGame(false);}
 		
 		// gameState initialisation 
 		if (gameState == null) {
 			mazeRunner.init(gl, screenWidth, screenHeight);
 			gameState = GameState.MENU;
-			input.setGameState(gameState);
-		}
-		
-		/* 
-		 * check if the gameState and is changed and update
-		 */
+			input.setGameState(gameState);}
+		 
+		// check if the gameState and is changed and update
 		if (gameState != input.getGameState()) {
 			gameState = input.getGameState();
 			switch(gameState) {
@@ -310,9 +309,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 			case PAUSE:
 				break;
 			case MENU:
-				break;
-			}
-		}
+				break;}}
 	}
 	
 	

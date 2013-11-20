@@ -4,26 +4,35 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-public class OptionsMenu extends MenuObject implements Menu {
-	private Button butt[];
+public class OptionsMenu extends MenuObject{
+	
+	private Button buttons[];
 	
 	public static final byte BACK = 0;
 	
-	
+	/**
+	 * Constructor creates menu objects
+	 */
 	public OptionsMenu(int minX,int maxX,int minY,int maxY){
-		super(minX,maxX,minY,maxY,true);
+		super(minX,maxX,minY,maxY);
 		
-		butt = new Button[1];
-		butt[0] = new Button("Back",minX,maxX,minY,maxY/2,0f,1f,.5f,false);
+		buttons = new Button[1];
+		buttons[0] = new Button("Back",minX,maxX,minY,maxY/2,0f,1f,.5f);
 	}
 	
+	/**
+	 * Returns the value of the button hovered over
+	 */
 	public int getButton(int x,int y){
-		if(butt[0].minX < x && x < butt[0].maxX && butt[0].minY < y && y < butt[0].maxY)
+		if(buttons[0].minX < x && x < buttons[0].maxX && buttons[0].minY < y && y < buttons[0].maxY)
 			return BACK;
 		return -1;
 	}
 	
-	public void display(GL gl){
+	/**
+	 * Draw the menu
+	 */
+	public void display(GL gl) {
 		gl.glPushMatrix();
 		GLUT glut = new GLUT();
 		float width = glut.glutStrokeLengthf(GLUT.STROKE_ROMAN, "Options"); // the width of the text-string in gl coordinations
@@ -33,33 +42,20 @@ public class OptionsMenu extends MenuObject implements Menu {
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, "Options"); // Draw's the text
 		gl.glPopMatrix();
 		
-		
-		for(int i = 0; i < 1; i++)
-			butt[i].display(gl);
+		for (Button b : buttons) {
+			b.display(gl);}
 	}
 	
-	
 	/**
-	* This methode is used to check if and what is selected
+	* This method is used to check if and what is selected
 	**/
 	public void update(int x, int y){
 		// set all the buttons to false
-		for (int i=0; i<butt.length; i++) {
-			butt[i].selected(false);}
+		for (int i=0; i<buttons.length; i++) {
+			buttons[i].setSelected(false);}
 		
 		// set selected button to true
 		switch(getButton(x,y)){
-		case BACK: 		butt[BACK].selected(true);		break;}
-	}
-	
-	/**
-	* This methode preforms the actions of the buttons
-	**/
-	public void start(int x, int y){
-		switch(getButton(x,y)){
-			case BACK:
-				MainMenu.bOptionsMenu = false;
-				break;
-		}
+		case BACK: 		buttons[BACK].setSelected(true);		break;}
 	}
 }

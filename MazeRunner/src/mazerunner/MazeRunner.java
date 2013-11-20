@@ -4,11 +4,8 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
-import Loot.Food;
-import Loot.Loot;
 import Loot.LootController;
 
 /** 
@@ -45,12 +42,12 @@ public class MazeRunner {
 	/**
 	 * Initialises the the INGAME part of the game.
 	 */
-	public MazeRunner(GLCanvas canvas, UserInput input) {
+	public MazeRunner(UserInput input) {
 		// set input
 		this.input = input;
 		
 		// Initialise all the objects
-		initObjects(canvas);
+		initObjects();
 	}
 	
 	/**
@@ -68,7 +65,7 @@ public class MazeRunner {
 	 * visualObjects list of MazeRunner through the add method, so it will be displayed 
 	 * automagically. 
 	 */
-	private void initObjects(GLCanvas canvas)	{
+	private void initObjects()	{
 		// We define an ArrayList of VisibleObjects to store all the objects that need to be
 		// displayed by MazeRunner.
 		visibleObjects = new ArrayList<VisibleObject>();
@@ -78,15 +75,15 @@ public class MazeRunner {
 		visibleObjects.add(maze);
 
 		// Initialise the player.
-		player = new Player(6 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// x-position
-							maze.SQUARE_SIZE / 2,							// y-position
-							5 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// z-position
+		player = new Player(6 * Maze.SQUARE_SIZE + Maze.SQUARE_SIZE / 2, 	// x-position
+							Maze.SQUARE_SIZE / 2,							// y-position
+							5 * Maze.SQUARE_SIZE + Maze.SQUARE_SIZE / 2, 	// z-position
 							90, 0,100);											// horizontal and vertical angle
 
 		// initialise an enemy and add
-		enemy = new Enemy(2 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// x-position
-						  maze.SQUARE_SIZE / 2,								// y-position
-						  4 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// z-position
+		enemy = new Enemy(2 * Maze.SQUARE_SIZE + Maze.SQUARE_SIZE / 2, 		// x-position
+						  Maze.SQUARE_SIZE / 2,								// y-position
+						  4 * Maze.SQUARE_SIZE + Maze.SQUARE_SIZE / 2, 		// z-position
 						  45,50);												// horizontal angle
 		visibleObjects.add(enemy);
 		

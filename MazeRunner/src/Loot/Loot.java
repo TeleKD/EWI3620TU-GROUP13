@@ -1,5 +1,7 @@
 package Loot;
 
+import javax.media.opengl.GL;
+import mazerunner.VisibleObject;
 
 public abstract class Loot implements VisibleObject {
 	protected double x,y,z;
