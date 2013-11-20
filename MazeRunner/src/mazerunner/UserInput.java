@@ -1,4 +1,6 @@
 package mazerunner;
+import gamestate.GameState;
+
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -25,6 +27,7 @@ public class UserInput extends Control
 {
 	private int locationXMouse, locationYMouse;
 	private int locationXMouseDragged, locationYMouseDragged;
+	private GameState gameState;
 	
 	/**
 	 * UserInput constructor.
@@ -85,7 +88,7 @@ public class UserInput extends Control
 	@Override
 	public void mousePressed(MouseEvent event)
 	{
-		if (!isPause()) {
+		if (gameState == GameState.INGAME) {
 			locationXMouse = event.getX();
 			locationYMouse = event.getY();
 			locationXMouseDragged = locationXMouse;
@@ -95,7 +98,7 @@ public class UserInput extends Control
 	@Override
 	public void mouseDragged(MouseEvent event)
 	{	
-		if (!isPause()) {
+		if (gameState == GameState.INGAME) {
 			locationXMouseDragged = event.getX();
 			locationYMouseDragged = event.getY();
 		}
@@ -104,7 +107,7 @@ public class UserInput extends Control
 	@Override
 	public void keyPressed(KeyEvent event)
 	{	
-		if(!isPause()) {
+		if(gameState == GameState.INGAME) {
 			switch(event.getKeyCode()) {
 			case KeyEvent.VK_W: forward = true; break;
 			case KeyEvent.VK_A: left = true;	break;
@@ -124,7 +127,10 @@ public class UserInput extends Control
 		case KeyEvent.VK_D: right = false;	 	break;
 		
 		// pause/unpause
-		case KeyEvent.VK_P: pause = !pause;		break;
+		case KeyEvent.VK_P: 
+			if (gameState == GameState.INGAME) gameState = GameState.PAUSE;
+			else if (gameState == GameState.PAUSE) gameState = GameState.INGAME;
+			break;
 		}
 	}
 
@@ -162,6 +168,14 @@ public class UserInput extends Control
 	@Override
 	public void mouseReleased(MouseEvent event)
 	{
+	}
+
+	public GameState getGameState() {
+		return gameState;
+	}
+	
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
 	}
 
 

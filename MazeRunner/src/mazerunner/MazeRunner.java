@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
 /** 
@@ -40,12 +39,12 @@ public class MazeRunner {
 	/**
 	 * Initialises the the INGAME part of the game.
 	 */
-	public MazeRunner(GLCanvas canvas, UserInput input) {
+	public MazeRunner(UserInput input) {
 		// set input
 		this.input = input;
 		
 		// Initialise all the objects
-		initObjects(canvas);
+		initObjects();
 	}
 	
 	/**
@@ -63,7 +62,7 @@ public class MazeRunner {
 	 * visualObjects list of MazeRunner through the add method, so it will be displayed 
 	 * automagically. 
 	 */
-	private void initObjects(GLCanvas canvas)	{
+	private void initObjects()	{
 		// We define an ArrayList of VisibleObjects to store all the objects that need to be
 		// displayed by MazeRunner.
 		visibleObjects = new ArrayList<VisibleObject>();
@@ -177,10 +176,6 @@ public class MazeRunner {
         for( Iterator<VisibleObject> it = visibleObjects.iterator(); it.hasNext(); ) {
         	it.next().display(gl);
         }
-
-        gl.glLoadIdentity();
-        // Flush the OpenGL buffer.
-        gl.glFlush();
 	}
 
 	
@@ -189,6 +184,7 @@ public class MazeRunner {
  * *			   update methods				*
  * **********************************************
  */
+	
 
 	/**
 	 * update() updates the mazerunner game using the past time since the previous frame
@@ -207,6 +203,7 @@ public class MazeRunner {
 		updateCamera();
 	}
 	
+	
 	/**
 	 * updateMovement(int) updates the position of all objects that need moving.
 	 * This includes rudimentary collision checking and collision reaction.
@@ -219,6 +216,7 @@ public class MazeRunner {
 		// Update the enemy
 		updateEnemyMovement(deltaTime);
 	}
+	
 	
 	/**
 	 * updatePlayerMovement(int) updates the player position and oriention
@@ -242,6 +240,7 @@ public class MazeRunner {
 		
 	}	
 	
+	
 	/**
 	 * updateEnemyMovement(int) updates the enemys position and orientation
 	 */
@@ -264,6 +263,7 @@ public class MazeRunner {
 		
 	}
 	
+	
 	/**
 	 * updateCamera() updates the camera position and orientation.
 	 * <p>
@@ -277,6 +277,8 @@ public class MazeRunner {
 		camera.setVerAngle( player.getVerAngle() );
 		camera.calculateVRP();
 	}
+	
+	
 	
 	
 /*

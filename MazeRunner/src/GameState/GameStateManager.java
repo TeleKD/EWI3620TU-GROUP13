@@ -15,6 +15,7 @@ import javax.media.opengl.glu.GLU;
 
 import mazerunner.MazeRunner;
 import mazerunner.UserInput;
+import Menu.MainMenu;
 
 import com.sun.opengl.util.Animator;
 
@@ -44,7 +45,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 	GameState gameState;									// current GameState
 	
 	MazeRunner mazeRunner;									// INGAME functionality
-	Pause pause;											// Pause functionality
+	MainMenu menu;											// MENU functionality
 	UserInput input;										// Mouse and Keyboard input functionality
 
 	/**
@@ -81,7 +82,9 @@ public class GameStateManager extends Frame implements GLEventListener{
 		input = new UserInput(canvas);
 		
 		// Initialise a MazeRunner Object (INGAME)
-		mazeRunner = new MazeRunner(canvas, input);
+		mazeRunner = new MazeRunner(input);
+		// Initialise a Menu Object (MENU)
+		menu = new MainMenu(0, screenWidth, 0, screenHeight);
 		
 		// set visible
 		setVisible(true);
@@ -166,17 +169,25 @@ public class GameStateManager extends Frame implements GLEventListener{
 			mazeRunner.display(gl);	// display mazerunner game
 			break;
 		case MENU:
-			// TODO: implement menu state
+			switchTo2D(gl);
+			menu.display(gl);
+			switchTo3D(gl);
 			break;
 		case PAUSE:
 			mazeRunner.display(gl);			// display frozen mazerunner game
-			switchTo2D(gl);					// swtich to 2D
+			switchTo2D(gl);					// switch to 2D
 			Pause.display(gl, screenWidth);	// display pause
 			switchTo3D(gl);					// switch to 3D
 			break;
 		default: 
 			System.out.println("default case display loop");
 		}
+
+		
+        // Load identity
+        gl.glLoadIdentity();
+        // Flush the OpenGL buffer.
+        gl.glFlush();
 	}
 	
 	/**
@@ -277,26 +288,21 @@ public class GameStateManager extends Frame implements GLEventListener{
 		
 		// gameState initialisation 
 		if (gameState == null) {
-			
-			// TODO: ! change initialisation to MENU !
 			mazeRunner.init(gl, screenWidth, screenHeight);
 			gameState = GameState.INGAME;
+			input.setGameState(gameState);
 		}
 		
 		/* 
-		 * check the gameState and if a switch is required 
-		 * and then switch the gameState
+		 * check if the gameState and is changed and update
 		 */
-		else {
+		if (gameState != input.getGameState()) {
+			gameState = input.getGameState();
 			switch(gameState) {
 			case INGAME:
-				if (input.isPause()) {
-					gameState = GameState.PAUSE;}
+				mazeRunner.setPreviousTime();
 				break;
 			case PAUSE:
-				if (!input.isPause()) {
-					mazeRunner.setPreviousTime();	// update the previoustime
-					gameState = GameState.INGAME;}
 				break;
 			case MENU:
 				break;

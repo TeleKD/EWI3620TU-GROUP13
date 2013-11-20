@@ -212,6 +212,7 @@ public class JOGLFrame extends Frame implements GLEventListener, MouseListener,M
 	public void mousePressed(MouseEvent me) {
 		menu.start(me.getX(),screenHeight-me.getY());
 	}
+	
 	@Override
 	public void mouseMoved(MouseEvent me){
 		menu.update(me.getX(),screenHeight-me.getY());
