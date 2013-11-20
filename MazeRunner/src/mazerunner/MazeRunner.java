@@ -4,7 +4,12 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GLCanvas;
 import javax.media.opengl.glu.GLU;
+
+import Loot.Food;
+import Loot.Loot;
+import Loot.LootController;
 
 /** 
  * MazeRunner is the class representing the INGAME GameState
@@ -28,6 +33,7 @@ public class MazeRunner {
 	private UserInput input;												// user input object controls the game.
 	private Maze maze; 														// the maze
 	private long previousTime = Calendar.getInstance().getTimeInMillis(); 	// Used to calculate elapsed time.
+	private LootController lootController;
 	
 
 
@@ -39,12 +45,12 @@ public class MazeRunner {
 	/**
 	 * Initialises the the INGAME part of the game.
 	 */
-	public MazeRunner(UserInput input) {
+	public MazeRunner(GLCanvas canvas, UserInput input) {
 		// set input
 		this.input = input;
 		
 		// Initialise all the objects
-		initObjects();
+		initObjects(canvas);
 	}
 	
 	/**
@@ -62,7 +68,7 @@ public class MazeRunner {
 	 * visualObjects list of MazeRunner through the add method, so it will be displayed 
 	 * automagically. 
 	 */
-	private void initObjects()	{
+	private void initObjects(GLCanvas canvas)	{
 		// We define an ArrayList of VisibleObjects to store all the objects that need to be
 		// displayed by MazeRunner.
 		visibleObjects = new ArrayList<VisibleObject>();
@@ -75,14 +81,18 @@ public class MazeRunner {
 		player = new Player(6 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// x-position
 							maze.SQUARE_SIZE / 2,							// y-position
 							5 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// z-position
-							90, 0, 100);											// horizontal and vertical angle
+							90, 0,100);											// horizontal and vertical angle
 
 		// initialise an enemy and add
 		enemy = new Enemy(2 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// x-position
 						  maze.SQUARE_SIZE / 2,								// y-position
 						  4 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// z-position
-						  45, 100);												// horizontal angle
+						  45,50);												// horizontal angle
 		visibleObjects.add(enemy);
+		
+		lootController = new LootController();
+		visibleObjects.add(lootController);
+			
 		
 		// set up a camera
 		camera = new Camera( player.getLocationX(), player.getLocationY(), player.getLocationZ(), 
@@ -91,6 +101,8 @@ public class MazeRunner {
 		// set player and enemy control
 		player.setControl(input);
 		enemy.setControl(new EnemyAI(enemy, player));
+		
+		
 		
 		
 //		///// TESTING EDITMAZE /////
@@ -176,6 +188,10 @@ public class MazeRunner {
         for( Iterator<VisibleObject> it = visibleObjects.iterator(); it.hasNext(); ) {
         	it.next().display(gl);
         }
+
+        gl.glLoadIdentity();
+        // Flush the OpenGL buffer.
+        gl.glFlush();
 	}
 
 	
@@ -184,7 +200,6 @@ public class MazeRunner {
  * *			   update methods				*
  * **********************************************
  */
-	
 
 	/**
 	 * update() updates the mazerunner game using the past time since the previous frame
@@ -199,10 +214,12 @@ public class MazeRunner {
 		// Update any movement since last frame.
 		updateMovement(deltaTime);
 		
+		// Update Loot
+		lootController.update(deltaTime,player.getLocationX(),player.getLocationZ());
+		
 		// Set camera according to the players position
 		updateCamera();
 	}
-	
 	
 	/**
 	 * updateMovement(int) updates the position of all objects that need moving.
@@ -216,7 +233,6 @@ public class MazeRunner {
 		// Update the enemy
 		updateEnemyMovement(deltaTime);
 	}
-	
 	
 	/**
 	 * updatePlayerMovement(int) updates the player position and oriention
@@ -240,7 +256,6 @@ public class MazeRunner {
 		
 	}	
 	
-	
 	/**
 	 * updateEnemyMovement(int) updates the enemys position and orientation
 	 */
@@ -263,7 +278,6 @@ public class MazeRunner {
 		
 	}
 	
-	
 	/**
 	 * updateCamera() updates the camera position and orientation.
 	 * <p>
@@ -277,8 +291,6 @@ public class MazeRunner {
 		camera.setVerAngle( player.getVerAngle() );
 		camera.calculateVRP();
 	}
-	
-	
 	
 	
 /*

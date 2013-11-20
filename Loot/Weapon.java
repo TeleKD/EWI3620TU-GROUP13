@@ -1,20 +1,24 @@
 package Loot;
 
+import javax.media.opengl.GL;
+
 public abstract class Weapon extends Loot {
-	protected float damage;
+	protected double damage;
 	boolean equipped;
 	
 	
-	public Weapon(float x, float y, float damage){
-		super(x,y);
+	public Weapon(double x, double y, double z, double damage){
+		super(x,y,z);
 		this.damage = damage;
 	}
 	
-	public float doDamage(){return damage;}
+	public double doDamage(){return damage;}
 	
 	public boolean getEquipped(){return equipped;}
 	public void setEquipped(boolean set){
 		equipped = set;
 	}
+	
+	public void display(GL gl){}
 	
 }
