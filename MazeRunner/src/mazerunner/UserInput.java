@@ -104,11 +104,13 @@ public class UserInput extends Control
 	@Override
 	public void keyPressed(KeyEvent event)
 	{	
-		switch(event.getKeyCode()) {
-		case KeyEvent.VK_W: forward = true; break;
-		case KeyEvent.VK_A: left = true;	break;
-		case KeyEvent.VK_S: back = true;	break;
-		case KeyEvent.VK_D: right = true;	break;
+		if(!isPause()) {
+			switch(event.getKeyCode()) {
+			case KeyEvent.VK_W: forward = true; break;
+			case KeyEvent.VK_A: left = true;	break;
+			case KeyEvent.VK_S: back = true;	break;
+			case KeyEvent.VK_D: right = true;	break;
+			}
 		}
 	}
 
@@ -120,6 +122,8 @@ public class UserInput extends Control
 		case KeyEvent.VK_A: left = false;	 	break;
 		case KeyEvent.VK_S: back = false;	 	break;	
 		case KeyEvent.VK_D: right = false;	 	break;
+		
+		// pause/unpause
 		case KeyEvent.VK_P: pause = !pause;		break;
 		}
 	}

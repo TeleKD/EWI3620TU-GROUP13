@@ -30,8 +30,9 @@ public class MazeRunner {
 	private Maze maze; 														// the maze
 	private long previousTime = Calendar.getInstance().getTimeInMillis(); 	// Used to calculate elapsed time.
 	
-	
-/*
+
+
+	/*
  * **********************************************
  * *		Initialization methods				*
  * **********************************************
@@ -165,18 +166,6 @@ public class MazeRunner {
 	public void display(GL gl) {
 		GLU glu = new GLU();
 		
-		// Calculating time since last frame.
-		Calendar now = Calendar.getInstance();		
-		long currentTime = now.getTimeInMillis();
-		int deltaTime = (int)(currentTime - previousTime);
-		previousTime = currentTime;
-		
-		// Update any movement since last frame.
-		updateMovement(deltaTime);
-		
-		// Set camera according to the players position
-		updateCamera();
-		
 		// set the viewing transformation
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
 		gl.glLoadIdentity();
@@ -201,6 +190,23 @@ public class MazeRunner {
  * **********************************************
  */
 
+	/**
+	 * update() updates the mazerunner game using the past time since the previous frame
+	 */
+	public void update() {
+		// Calculating time since last frame.
+		Calendar now = Calendar.getInstance();		
+		long currentTime = now.getTimeInMillis();
+		int deltaTime = (int)(currentTime - previousTime);
+		previousTime = currentTime;
+		
+		// Update any movement since last frame.
+		updateMovement(deltaTime);
+		
+		// Set camera according to the players position
+		updateCamera();
+	}
+	
 	/**
 	 * updateMovement(int) updates the position of all objects that need moving.
 	 * This includes rudimentary collision checking and collision reaction.
@@ -270,5 +276,19 @@ public class MazeRunner {
 		camera.setHorAngle( player.getHorAngle() );
 		camera.setVerAngle( player.getVerAngle() );
 		camera.calculateVRP();
+	}
+	
+	
+/*
+ * **********************************************
+ * *				  setters					*
+ * **********************************************
+ */
+
+	/**
+	 * sets the previousTime variable to the current time
+	 */
+	public void setPreviousTime() {
+		this.previousTime = Calendar.getInstance().getTimeInMillis();
 	}
 }

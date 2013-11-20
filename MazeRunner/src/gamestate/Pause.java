@@ -1,44 +1,29 @@
 package gamestate;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
 
 import com.sun.opengl.util.GLUT;
 
-public class Pause {
+public abstract class Pause {
 	
-	String pauseString = "PAUSE";
+	private static String pauseString = "PAUSE";
 	
-	/*
-	 * Displays pause on the screen when the game is paused
-	 */
-	public void display(GL gl) {
+	/**
+	  * Displays pause on the screen when the game is paused
+	  */
+	protected static void display(GL gl, int screenWidth) {
         GLUT glut = new GLUT();
-        GLU glu = new GLU();
         
-        // push matrices and set projection to '2D' orthogonal
-		gl.glMatrixMode(GL.GL_PROJECTION);
-        gl.glPushMatrix();
-        gl.glLoadIdentity();
-        glu.gluOrtho2D(0,600,0,600);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
-        gl.glPushMatrix();
-        
-        // Set colour and material.
-        float wallColour[] = { 0f, 1f, 0f, 1f };						// red
-        gl.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, wallColour, 0);	// Set the materials
-        
-        // Draw String
-        gl.glLoadIdentity();
+       	// get the string pixel length
         int length = glut.glutBitmapLength(GLUT.BITMAP_9_BY_15, pauseString);
-        gl.glColor3f(1f,0f,0f);
-        gl.glRasterPos2i(300 - length/2, 20);
-        glut.glutBitmapString(GLUT.BITMAP_9_BY_15, pauseString);
         
-        // pop matrices
-        gl.glMatrixMode(GL.GL_PROJECTION);
-        gl.glPopMatrix();
-        gl.glMatrixMode(GL.GL_MODELVIEW);
-        gl.glPopMatrix();
+        // set the color
+        gl.glColor4f(0f, 1f, 0f, 1f);
+        
+        // set the string position (middle bottom)
+        gl.glRasterPos2i(screenWidth/2 - length/2, 20);
+        
+        // draw the string
+        glut.glutBitmapString(GLUT.BITMAP_9_BY_15, pauseString);
 	}
 }

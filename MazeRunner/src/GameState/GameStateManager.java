@@ -82,8 +82,6 @@ public class GameStateManager extends Frame implements GLEventListener{
 		
 		// Initialise a MazeRunner Object (INGAME)
 		mazeRunner = new MazeRunner(canvas, input);
-		// Initialise a Pause object (PAUSE)
-		pause = new Pause();
 		
 		// set visible
 		setVisible(true);
@@ -161,16 +159,20 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// update the game status
 		updateGameState(gl);
 
-		// pick the right display function
+		// update and display using the current gamestate
 		switch (gameState) {
 		case INGAME: 
-			mazeRunner.display(gl);
+			mazeRunner.update();	// update mazerunner game
+			mazeRunner.display(gl);	// display mazerunner game
 			break;
 		case MENU:
 			// TODO: implement menu state
 			break;
 		case PAUSE:
-			pause.display(gl);// TODO: implement menu state
+			mazeRunner.display(gl);			// display frozen mazerunner game
+			switchTo2D(gl);					// swtich to 2D
+			Pause.display(gl, screenWidth);	// display pause
+			switchTo3D(gl);					// switch to 3D
 			break;
 		default: 
 			System.out.println("default case display loop");
@@ -212,6 +214,57 @@ public class GameStateManager extends Frame implements GLEventListener{
 	
 	/*
 	 * **********************************************
+	 * *			   Switch projection			*
+	 * **********************************************
+	 */	
+	
+	/**
+	 * Switches the projection to 2D by pushing a projection and modelview matrix
+	 * Also disables 3D projection options
+	 */
+	public void switchTo2D(GL gl) {
+		GLU glu = new GLU();
+		
+		// push matrices and set projection to '2D' orthogonal
+		gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
+        glu.gluOrtho2D(0,screenWidth,0,screenHeight);
+        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
+        
+        // disable z-buffer back face culling and lighting
+        gl.glDisable(GL.GL_CULL_FACE);  
+        gl.glDisable(GL.GL_DEPTH_TEST);  
+        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL.GL_LIGHT0);
+        
+        // clear the color buffer bit
+        gl.glClearColor(0,0,0,0);
+	}
+
+	/**
+	 * Switches the projection back to 3D by popping a projection and a modelview matrix
+	 * re-enables 3D projection options
+	 */
+	public void switchTo3D(GL gl) {
+		// pop matrices
+        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glPopMatrix();
+        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glPopMatrix();
+        
+        // re-enable z-buffer and back face culling and lighting
+        gl.glEnable(GL.GL_CULL_FACE);  
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL.GL_LIGHTING);
+        gl.glEnable(GL.GL_LIGHT0);
+	}
+	
+	
+	/*
+	 * **********************************************
 	 * *			updateGameState					*
 	 * **********************************************
 	 */
@@ -242,6 +295,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 				break;
 			case PAUSE:
 				if (!input.isPause()) {
+					mazeRunner.setPreviousTime();	// update the previoustime
 					gameState = GameState.INGAME;}
 				break;
 			case MENU:

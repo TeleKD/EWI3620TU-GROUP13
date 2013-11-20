@@ -22,7 +22,6 @@ public class EnemyAI extends Control{
 		seperationX = enemy.getLocationX() - player.getLocationX();
 		seperationZ = enemy.getLocationZ() - player.getLocationZ();
 
-		System.out.println(seperationR);
 		enemy.setHorAngle((180/Math.PI)*Math.atan2(seperationX, seperationZ));
 		
 		seperationR = Math.sqrt(Math.pow(seperationX, 2) + Math.pow(seperationZ, 2));
