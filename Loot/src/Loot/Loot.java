@@ -1,24 +1,33 @@
 package Loot;
 
-public abstract class Loot {
-	protected float x,y;
+import javax.media.opengl.GL;
+import mazerunner.VisibleObject;
+
+public abstract class Loot implements VisibleObject {
+	protected double x,y,z;
 	
 	
-	public Loot(float x,float y){
+	public Loot(double x,double y,double z){
 		this.x = x;
 		this.y = y;
+		this.z = z;
 	}
 	
 	/**
 	 * Gives the X location 
 	 * @return the x coordinate
 	 */
-	public float getX(){return x;}
+	public double getX(){return x;}
 	/**
 	 * Gives the Y location
 	 * @return the y coordinate
 	 */
-	public float getY(){return y;}
+	public double getY(){return y;}
+	/**
+	 * Gives the z location
+	 * @return the z coordinate
+	 */
+	public double getZ(){return z;}
 	
 	/**
 	 * This methode can be used for loot that will lose potential over time
@@ -29,6 +38,6 @@ public abstract class Loot {
 	/**
 	 * Draw's the loot
 	 */
-	public abstract void draw();
+	public abstract void display(GL gl);
 	
 }
