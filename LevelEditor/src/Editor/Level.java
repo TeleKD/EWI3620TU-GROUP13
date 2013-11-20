@@ -39,11 +39,11 @@ public class Level {
 			for(int j = 0; j < y; j++){
 				//Drawing the floor
 				if (level[i][j] == 0){
-					gl.glColor3f(0.8f, 0.9f, 0.4f);
+					gl.glColor3f(38/255f, 47/255f, 64/255f);
 				}
 				//Drawing the walls
 				else if(level[i][j] == 1){
-					gl.glColor3f(0.0f, 0.9f, 0.4f);
+					gl.glColor3f(87/255f, 84/255f, 83/255f);
 				}
 				
 				//filling the squares
@@ -61,7 +61,7 @@ public class Level {
 		//set the LineWidth and the line color
 		int size = 3;
 		gl.glLineWidth(size);
-		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glColor3f(159/255f, 187/255f, 237/255f);
 		
 		//vertical lines of the grid
 		for(int i = 0; i <= x; i++){

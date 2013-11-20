@@ -35,9 +35,9 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	private int mazeX = 10;						//number of X-squares, 10 entered for testing
 	private int mazeY = mazeX;
 	private int levels;									//number of levels in the maze
-	private int knoplaag = 7;
-	private float mazeL = screenWidth/8;					//Left bound of mazeDrawingWindow
-	private float mazeR = screenWidth-screenWidth/16;		//Right bound of mazeDrawingWindow
+	private int buttonRow = 10;
+	private float mazeL = ((screenWidth-screenHeight)/3*2);					//Left bound of mazeDrawingWindow
+	private float mazeR = screenWidth-((screenWidth-screenHeight)/3);		//Right bound of mazeDrawingWindow
 	
 	//creates a level with walls on the borders
 	//This is only for testing purposes TODO create a level in the JFrame popup when the user
@@ -47,13 +47,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	
 	//Button related
 	private Button btn[];
-	private Button back[];
-		
+	private Button btnr[];		
 	
 	public Editor() {
-		super("Level Editor v0.001");
+		super("Level Editor v0.2");
 		setSize(screenWidth, screenHeight);
-		setBackground(new Color(0.5f, 0.4f, 0.1f));
+		//setBackground(new Color(0.5f, 0.4f, 0.1f)); //doet niks
 		GLCapabilities caps = new GLCapabilities();
 		caps.setDoubleBuffered(true);
 		caps.setHardwareAccelerated(true);
@@ -66,7 +65,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		anim.start();
 		setUndecorated(true);
 		setResizable(false);
-		setVisible(true);			//even niet
+		setVisible(true);
 	}
 	
 	public static void main(String[] args){
@@ -83,19 +82,22 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	//Button definition
 	public void Buttons(GL gl){
 		
-		back[0].draw(gl);
-		back[1].draw(gl);
-		
-		for(int i=0;i<knoplaag*2-1;i++){
+		for (int i = 0; i < buttonRow*3; i++){
 			btn[i].draw(gl);
 		}
+		
+		//left row of buttons
+//		for (int i = 0; i < buttonRow; i++){
+//			btnr[i].draw(gl);
+//		}
+	
 
 		
 	}
 	
 	public int getButton(int x,int y){
 		int i = -1;
-		for(int it = 0;it<knoplaag*2-1;it++){
+		for(int it = 0;it<buttonRow*3;it++){
 			if(btn[it].getX() < x && x < btn[it].getSizex()+btn[it].getX() && btn[it].getY() < y && y < btn[it].getSizey()+btn[it].getY()){
 				i = it;
 				break;
@@ -118,7 +120,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		GL gl = drawable.getGL();
 
 		// Set the clear color and clear the screen.
-		gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
+		gl.glClearColor(75/255f, 94/255f, 127/255f, 1);
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
 		// Draw the buttons.
@@ -175,28 +177,43 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		//print the level for reference, should be turned off eventually
 		System.out.println(level.toString());
 		
+		//Creating the left buttonmenu
+		float buttonsizex = mazeL/4;
+    	float spacingx = buttonsizex/4;
+    	float buttonsizey = screenHeight/(buttonRow+1);
+    	float spacingy = buttonsizey/buttonRow;
+		btn = new Button[buttonRow*3];
 		
-		float buttonsize = screenWidth/24; 
-		float spacing = screenWidth/72;
+		float colors[][] = new float[3][buttonRow*3];
+		//color of the walldraw button
+		colors[0][0] = 87/255f; colors[1][0] = 84/255f; colors[2][0] = 83/255f;
 		
-		btn = new Button[knoplaag*2];
+		//color of the second button
+		colors[0][1] = 8/255f; colors[1][1] = 84/255f; colors[2][1] = 83/255f;
 		
-		for(int i = 0;i<knoplaag;i++){
-			btn[i*2] = new Button(gl, screenWidth/72, screenHeight - (3*(spacing+buttonsize)+(i+1)*(spacing+buttonsize)), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
+		//color of the other buttons (temporary)
+		for (int i = 0; i < 3; i++){
+			for (int j = 2; j < 30; j++){
+				colors[i][j] = /*(float) Math.random();*/0.5f;
+			}
 		}
-		int nexter = 0;
-		for(int i = 1;i<knoplaag;i++){
-			btn[i+nexter] = new Button(gl, buttonsize+2*screenWidth/72, screenHeight - (3*(spacing+buttonsize)+i*(spacing+buttonsize)), buttonsize, buttonsize, 0.8f, 0.9f, 0f);
-			nexter = nexter + 1;
-		}
 		
-		back = new Button[2];
-		//background for the buttons at the right side		
-		back[0] = new Button(gl, mazeR, 0, screenWidth/16, screenHeight, 0.8f, 0.03f, 0f);		
-		//background for the buttons at the left side		
-		back[1] = new Button(gl, 0, 0, mazeL, screenHeight, 0.8f, 0.03f, 0f);
-				
-				
+		//Create the buttons left
+	   	int index = 0;
+	   	for(int row = 0;row<buttonRow;row++){
+	   		for(int col = 0;col<3;col++){
+	   			btn[index] = new Button(gl, spacingx+col*spacingx+col*buttonsizex, screenHeight - (row+1)*(spacingy+buttonsizey), 
+	   					buttonsizex, buttonsizey, colors[0][index], colors[1][index], colors[2][index]);
+	   			index++;
+	   		 }
+	   	 }
+	   	
+	  //Create the buttons right
+//	  int indexr = 0;
+//	  for (int i = 0; i < buttonRow; i++){
+//		  btnr[indexr] = new Button(gl, i*40, 40, 40, 40, 0.5f, 0.5f, 0.5f);
+//		  indexr++;
+//	  }
 	}
 	
 	@Override
@@ -208,50 +225,16 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		if(i>=0){
 			btn[i].setSelected(true);
 			//set selected for other buttons to false
-			for(int j = 0; j < knoplaag*2-1; j++){
+			for(int j = 0; j < buttonRow*3; j++){
 				if (j != i){
 					btn[j].setSelected(false);
 				}
 			}
-		}
-		
+		}		
 		System.out.println("Dit is knop "+ i);
-		if(i == (knoplaag-1)*2){
+		if(i == buttonRow*3-1){
 			System.exit(0);
 		}
-	}
-
-	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
-			int arg4) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent me) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent me){
-		//System.out.println("Versleept");
-		if(btn[0].selected || SwingUtilities.isRightMouseButton(me)){
-			mousePressed(me);
-		}
-		
 	}
 
 	@Override
@@ -276,11 +259,24 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			System.out.println(level.toString());
 		}	
 	}
-
+	
 	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseDragged(MouseEvent me){
+		//System.out.println("Versleept");
+		if(btn[0].selected || SwingUtilities.isRightMouseButton(me)){
+			mousePressed(me);
+		}
 		
 	}
 
+	@Override
+	public void mouseMoved(MouseEvent arg0) {/*NOT USED*/}
+	@Override
+	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3, int arg4) {/*NOT USED*/}
+	@Override
+	public void mouseClicked(MouseEvent me) {/*NOT USED*/}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {/*NOT USED*/}
+	@Override
+	public void mouseExited(MouseEvent arg0) {/*NOT USED*/}
 }

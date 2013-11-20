@@ -23,7 +23,6 @@ public class Button {
 		this.R = R;
 		this.G = G;
 		this.B = B;
-		this.selected = selected;
 	}
 	
 	public void draw(GL gl){
@@ -34,10 +33,7 @@ public class Button {
 		else{
 			gl.glColor3f(R,G,B);
 			boxOnScreen(gl,x,y,sizex,sizey);
-		}
-				
-			
-			
+		}	
 	}
 	
 	public void boxOnScreen(GL gl, float x, float y, float sizex, float sizey) {
@@ -70,6 +66,18 @@ public class Button {
 
 	public float getSizey() {
 		return sizey;
+	}
+
+	public float getR() {
+		return R;
+	}
+
+	public float getG() {
+		return G;
+	}
+
+	public float getB() {
+		return B;
 	}
 
 }
