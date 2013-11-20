@@ -20,7 +20,7 @@ import com.sun.opengl.util.GLUT;
  * @author Marius
  *
  */
-public class Enemy extends GameObject implements VisibleObject{
+public class Enemy extends Unit implements VisibleObject{
 	private double horAngle;
 	private double speed;
 	
@@ -40,9 +40,9 @@ public class Enemy extends GameObject implements VisibleObject{
 	 * @param z		the z-coordinate of the location
 	 * @param h		the horizontal angle of the orientation in degrees
 	 */
-	public Enemy( double x, double y, double z, double h) {
+	public Enemy( double x, double y, double z, double h,double hp) {
 		// Set the initial position and viewing direction of the enemy.
-		super(x, y, z);
+		super(x, y, z,hp);
 		horAngle = h;
 		speed = 0.008;
 	}
