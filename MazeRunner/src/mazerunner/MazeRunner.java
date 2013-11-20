@@ -75,13 +75,13 @@ public class MazeRunner {
 		player = new Player(6 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// x-position
 							maze.SQUARE_SIZE / 2,							// y-position
 							5 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 	// z-position
-							90, 0);											// horizontal and vertical angle
+							90, 0, 100);											// horizontal and vertical angle
 
 		// initialise an enemy and add
 		enemy = new Enemy(2 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// x-position
 						  maze.SQUARE_SIZE / 2,								// y-position
 						  4 * maze.SQUARE_SIZE + maze.SQUARE_SIZE / 2, 		// z-position
-						  45);												// horizontal angle
+						  45, 100);												// horizontal angle
 		visibleObjects.add(enemy);
 		
 		// set up a camera
