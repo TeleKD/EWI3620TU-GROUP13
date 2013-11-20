@@ -10,6 +10,8 @@ import java.awt.event.MouseMotionListener;
 
 import javax.media.opengl.GLCanvas;
 
+import Menu.MainMenu;
+
 /**
  * The UserInput class is an extension of the Control class. It also implements three 
  * interfaces, each providing handler methods for the different kinds of user input.
@@ -25,9 +27,13 @@ import javax.media.opengl.GLCanvas;
 public class UserInput extends Control 
 		implements MouseListener, MouseMotionListener, KeyListener
 {
+	private MainMenu menu;
+	private GameState gameState;
+	
 	private int locationXMouse, locationYMouse;
 	private int locationXMouseDragged, locationYMouseDragged;
-	private GameState gameState;
+	
+	private int screenHeight;
 	
 	/**
 	 * UserInput constructor.
@@ -37,11 +43,13 @@ public class UserInput extends Control
 	 * 
 	 * @param canvas The GLCanvas to which to add the listeners.
 	 */
-	public UserInput(GLCanvas canvas)
+	public UserInput(GLCanvas canvas, int screenHeight)
 	{
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
 		canvas.addKeyListener(this);
+		
+		this.screenHeight = screenHeight;
 	}
 	
 	/*
@@ -51,7 +59,7 @@ public class UserInput extends Control
 	 */
 	
 	/**
-	 * update the controlled variables
+	 * update()
 	 */
 	@Override
 	public void update()
@@ -79,11 +87,13 @@ public class UserInput extends Control
 
 	}
 
+	
 	/*
 	 * **********************************************
 	 * *		Input event handlers				*
 	 * **********************************************
 	 */
+
 
 	@Override
 	public void mousePressed(MouseEvent event)
@@ -93,6 +103,9 @@ public class UserInput extends Control
 			locationYMouse = event.getY();
 			locationXMouseDragged = locationXMouse;
 			locationYMouseDragged = locationYMouse;}
+		
+		if (gameState == GameState.MENU) {
+			menu.start(event.getX(), screenHeight - event.getY());}
 	}
 
 	@Override
@@ -104,6 +117,13 @@ public class UserInput extends Control
 		}
 	}
 
+	@Override
+	public void mouseMoved(MouseEvent event)
+	{
+		if (gameState == GameState.MENU) {
+			menu.update(event.getX(), screenHeight - event.getY());}
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent event)
 	{	
@@ -131,8 +151,11 @@ public class UserInput extends Control
 			if (gameState == GameState.INGAME) gameState = GameState.PAUSE;
 			else if (gameState == GameState.PAUSE) gameState = GameState.INGAME;
 			break;
-		}
+		
+		// to menu
+		case KeyEvent.VK_ESCAPE: 	gameState = GameState.MENU;		break;}
 	}
+	
 
 	/*
 	 * **********************************************
@@ -140,11 +163,6 @@ public class UserInput extends Control
 	 * **********************************************
 	 */
 	
-	@Override
-	public void mouseMoved(MouseEvent event)
-	{
-	}
-
 	@Override
 	public void keyTyped(KeyEvent event)
 	{
@@ -176,6 +194,16 @@ public class UserInput extends Control
 	
 	public void setGameState(GameState gameState) {
 		this.gameState = gameState;
+	}
+
+	
+	public void setMenu(MainMenu menu) {
+		this.menu = menu;
+	}
+
+	
+	public void setScreenHeight(int screenHeight) {
+		this.screenHeight = screenHeight;
 	}
 
 

@@ -1,9 +1,16 @@
 package Menu;
 
+import gamestate.GameState;
+
 import javax.media.opengl.GL;
 
+import mazerunner.UserInput;
+
 public class MainMenu extends MenuObject implements Menu {
-	private Button butt[]; // ArrayList doesn't work it will generate a lot of runtime Errors in openGL
+	
+	private UserInput input;
+	
+	private Button butt[];
 	private PlayMenu playMenu;
 	private OptionsMenu optionsMenu;
 	private QuitMenu quitMenu;
@@ -18,7 +25,7 @@ public class MainMenu extends MenuObject implements Menu {
 	public static final byte QUIT = 2;
 	
 	
-	public MainMenu(int minX,int maxX,int minY,int maxY){
+	public MainMenu(UserInput input, int minX,int maxX,int minY,int maxY){
 		super(minX,maxX,minY,maxY,true);
 		
 		bPlayMenu = false;
@@ -34,6 +41,8 @@ public class MainMenu extends MenuObject implements Menu {
 		butt[0] = new Button("Play",minX,maxX,minY+(maxY-minY)*2/3,maxY,0f,1f,.5f,false);
 		butt[1] = new Button("Options",minX,maxX,minY+(maxY-minY)/3,minY+(maxY-minY)*2/3,0f,1f,.5f,false);
 		butt[2] = new Button("Quit",minX,maxX,minY,minY+(maxY-minY)/3,0f,1f,.5f,false);
+		
+		this.input = input;
 	}
 	
 	public int getButton(int x,int y){
@@ -58,48 +67,51 @@ public class MainMenu extends MenuObject implements Menu {
 			butt[1].display(gl);
 			butt[2].display(gl);
 		}
+		
+		if (playMenu.toGame == true) {
+			input.setGameState(GameState.INGAME);
+			playMenu.toGame = false;
+		}
 	}
 	
-	public void setPlay(boolean set){bPlayMenu = set;}
-	public void setOptions(boolean set){bOptionsMenu = set;}
-	public void setQuit(boolean set){bQuitMenu = set;}
+	public void setPlay(boolean set){
+		bPlayMenu = set;}
 	
-	public boolean getPlay(){return bPlayMenu;}
-	public boolean getOptions(){return bOptionsMenu;}
-	public boolean getQuit(){return bQuitMenu;}
+	public void setOptions(boolean set){
+		bOptionsMenu = set;}
+	
+	public void setQuit(boolean set){
+		bQuitMenu = set;}
+	
+	public boolean getPlay(){
+		return bPlayMenu;}
+	
+	public boolean getOptions(){
+		return bOptionsMenu;}
+	
+	public boolean getQuit(){
+		return bQuitMenu;}
+	
 	
 	/**
 	* This methode is used to check if and what is selected
 	**/
 	public void update(int x,int y){
-		if(bPlayMenu)
-			playMenu.update(x,y);
-		else if(bOptionsMenu)
-			optionsMenu.update(x,y);
-		else if(bQuitMenu)
-			quitMenu.update(x, y);
+		
+		if		(bPlayMenu)		playMenu.update(x,y);
+		else if	(bOptionsMenu)	optionsMenu.update(x,y);
+		else if	(bQuitMenu)		quitMenu.update(x,y);
+		
 		else{
+			// set all the buttons to false
+			for (int i=0; i<butt.length; i++) {
+				butt[i].selected(false);}
+			
+			// set selected button to true
 			switch(getButton(x,y)){
-			case PLAY:
-				butt[OPTIONS].selected(false);
-				butt[QUIT].selected(false);
-				butt[PLAY].selected(true);
-				break;
-			case OPTIONS:
-				butt[PLAY].selected(false);
-				butt[QUIT].selected(false);
-				butt[OPTIONS].selected(true);
-				break;
-			case QUIT:
-				butt[PLAY].selected(false);
-				butt[OPTIONS].selected(false);
-				butt[QUIT].selected(true);
-				break;
-			default:
-				butt[PLAY].selected(false);
-				butt[OPTIONS].selected(false);
-				butt[QUIT].selected(false);
-			}
+			case PLAY: 		butt[PLAY].selected(true);		break;
+			case OPTIONS: 	butt[OPTIONS].selected(true);	break;
+			case QUIT:		butt[QUIT].selected(true);		break;}
 		}
 	}
 	/**
@@ -129,5 +141,4 @@ public class MainMenu extends MenuObject implements Menu {
 			}
 		}
 	}
-	
 }

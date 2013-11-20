@@ -4,6 +4,9 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
+/**
+ * Class for the pause functionality of the game (PAUSE)
+ */
 public abstract class Pause {
 	
 	private static String pauseString = "PAUSE";

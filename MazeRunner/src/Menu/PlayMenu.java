@@ -5,6 +5,8 @@ import javax.media.opengl.GL;
 public class PlayMenu extends MenuObject implements Menu {
 	private Button butt[];
 	
+	protected boolean toGame = false;
+	
 	public static final byte NEW = 0;
 	public static final byte LOAD = 1;
 	public static final byte BACK = 2;
@@ -40,35 +42,25 @@ public class PlayMenu extends MenuObject implements Menu {
 	* This methode is used to check if and what is selected
 	**/
 	public void update(int x,int y){
+		
+		// set all the buttons to false
+		for (int i=0; i<butt.length; i++) {
+			butt[i].selected(false);}
+		
+		// set selected button to true
 		switch(getButton(x,y)){
-			case NEW:
-				butt[LOAD].selected(false);
-				butt[BACK].selected(false);
-				butt[NEW].selected(true);
-				break;
-			case LOAD:
-				butt[NEW].selected(false);
-				butt[BACK].selected(false);
-				butt[LOAD].selected(true);
-				break;
-			case BACK:
-				butt[NEW].selected(false);
-				butt[LOAD].selected(false);
-				butt[BACK].selected(true);
-				break;
-			default:
-				butt[NEW].selected(false);
-				butt[LOAD].selected(false);
-				butt[BACK].selected(false);
-		}
+		case NEW: 		butt[NEW].selected(true);		break;
+		case LOAD: 		butt[LOAD].selected(true);		break;
+		case BACK:		butt[BACK].selected(true);		break;}
 	}
+	
 	/**
-	* This methode preforms the actions of the buttons
-	**/
+	 * This methode preforms the actions of the buttons
+	 */
 	public void start(int x, int y){
 		switch(getButton(x,y)){
 			case NEW:
-				// start new game
+				toGame = true;
 			break;
 			case LOAD:
 				// load game

@@ -43,13 +43,13 @@ public class OptionsMenu extends MenuObject implements Menu {
 	* This methode is used to check if and what is selected
 	**/
 	public void update(int x, int y){
+		// set all the buttons to false
+		for (int i=0; i<butt.length; i++) {
+			butt[i].selected(false);}
+		
+		// set selected button to true
 		switch(getButton(x,y)){
-			case BACK:
-				butt[BACK].selected(true);
-				break;
-			default:
-				butt[BACK].selected(false);
-		}
+		case BACK: 		butt[BACK].selected(true);		break;}
 	}
 	
 	/**

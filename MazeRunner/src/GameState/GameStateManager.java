@@ -41,12 +41,12 @@ public class GameStateManager extends Frame implements GLEventListener{
 	 */
 	
 	private int screenWidth = 600, screenHeight = 600;		// Screen size.
-	GLCanvas canvas;										// canvas for drawing
-	GameState gameState;									// current GameState
+	private GLCanvas canvas;								// canvas for drawing
+	private GameState gameState;							// current GameState
 	
-	MazeRunner mazeRunner;									// INGAME functionality
-	MainMenu menu;											// MENU functionality
-	UserInput input;										// Mouse and Keyboard input functionality
+	private MazeRunner mazeRunner;							// INGAME functionality
+	private MainMenu menu;									// MENU functionality
+	private UserInput input;								// Mouse and Keyboard input functionality
 
 	/**
 	 * Initialises the complete game.
@@ -79,12 +79,13 @@ public class GameStateManager extends Frame implements GLEventListener{
 		initJOGL();
 		
 		// Initialise and set a UserInput Object
-		input = new UserInput(canvas);
+		input = new UserInput(canvas, screenHeight);
 		
 		// Initialise a MazeRunner Object (INGAME)
 		mazeRunner = new MazeRunner(input);
 		// Initialise a Menu Object (MENU)
-		menu = new MainMenu(0, screenWidth, 0, screenHeight);
+		menu = new MainMenu(input, 0, 300, 0, 300);
+		input.setMenu(menu);
 		
 		// set visible
 		setVisible(true);
@@ -161,6 +162,9 @@ public class GameStateManager extends Frame implements GLEventListener{
 		
 		// update the game status
 		updateGameState(gl);
+		
+		// clear the color buffer
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
 		// update and display using the current gamestate
 		switch (gameState) {
@@ -213,6 +217,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// Setting the new screen size and adjusting the viewport.
 		screenWidth = width;
 		screenHeight = height;
+		input.setScreenHeight(screenHeight);
 		gl.glViewport( 0, 0, screenWidth, screenHeight );
 		
 		// Set the new projection matrix.
@@ -289,7 +294,7 @@ public class GameStateManager extends Frame implements GLEventListener{
 		// gameState initialisation 
 		if (gameState == null) {
 			mazeRunner.init(gl, screenWidth, screenHeight);
-			gameState = GameState.INGAME;
+			gameState = GameState.MENU;
 			input.setGameState(gameState);
 		}
 		
