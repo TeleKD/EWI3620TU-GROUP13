@@ -164,10 +164,10 @@ public class MainMenu extends MenuObject implements MenuInterface{
 		case PLAY:
 			switch(playMenu.getButton(x, y)) {
 			case PlayMenu.NEW:		
-				input.setGameState(GameState.INGAME); 
+				input.setGameState(gamestate.INGAME); 
 				input.setNewGame(true);
 				break;
-			case PlayMenu.CONTINUE: input.setGameState(GameState.INGAME);
+			case PlayMenu.CONTINUE: input.setGameState(gamestate.INGAME);
 			case PlayMenu.BACK: 	menuState = MenuState.MAIN; break;}
 			break;
 			
