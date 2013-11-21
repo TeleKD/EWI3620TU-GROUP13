@@ -21,8 +21,6 @@ import javax.swing.SwingUtilities;
 import com.sun.opengl.util.Animator;
 
 
-
-
 public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener {
 
 	//Graphic related variables
@@ -34,7 +32,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	//Maze related variables
 	private int mazeX = 10;						//number of X-squares, 10 entered for testing
 	private int mazeY = mazeX;
-	private int levels;									//number of levels in the maze
+	private int nlevels = 6;									//number of levels in the maze
 	private int buttonRow = 10;
 	private float mazeL = ((screenWidth-screenHeight)/3*2);					//Left bound of mazeDrawingWindow
 	private float mazeR = screenWidth-((screenWidth-screenHeight)/3);		//Right bound of mazeDrawingWindow
@@ -43,11 +41,14 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	//This is only for testing purposes TODO create a level in the JFrame popup when the user
 	//clicks the "new level" button, then find a way to correspond that level to 1 of the 10 levels buttons
 	Level level = new Level(mazeX,mazeY);
-	private float gridBorder = (((mazeR-mazeL)-mazeX*level.buttonsizex)/2);
 	
+	private float gridBorder = (((mazeR-mazeL)-mazeX*level.buttonsizex)/2);
+	private Level levels[] = new Level[6];
+
 	//Button related
 	private Button btn[];
 	private Button btnr[];		
+
 	
 	public Editor() {
 		super("Level Editor v0.2");
@@ -87,9 +88,9 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
 		//left row of buttons
-//		for (int i = 0; i < buttonRow; i++){
-//			btnr[i].draw(gl);
-//		}
+		for (int i = 0; i < buttonRow; i++){
+			btnr[i].draw(gl);
+		}
 	
 
 		
@@ -98,13 +99,27 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	public int getButton(int x,int y){
 		int i = -1;
 		for(int it = 0;it<buttonRow*3;it++){
-			if(btn[it].getX() < x && x < btn[it].getSizex()+btn[it].getX() && btn[it].getY() < y && y < btn[it].getSizey()+btn[it].getY()){
+			if(btn[it].getX() < x && x < btn[it].getSizex()+btn[it].getX() && btn[it].getY() < y &&
+					y < btn[it].getSizey()+btn[it].getY()){
 				i = it;
 				break;
 			}
 		}
 		return i;
 	}
+	
+	public int getButtonR(int x,int y){
+		int i = -1;
+		for(int it = 0; it<buttonRow;it++){
+			if(btnr[it].getX() < x && x < btnr[it].getSizex()+btnr[it].getX() && btnr[it].getY() < y &&
+					y < btnr[it].getSizey()+btnr[it].getY()){
+				i = it;
+				break;
+			}
+		}
+		return i;
+	}
+	
 	
 	public int getScreenWidth() {
 		return screenWidth;
@@ -181,9 +196,11 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		float buttonsizex = mazeL/4;
     	float spacingx = buttonsizex/4;
     	float buttonsizey = screenHeight/(buttonRow+1);
-    	float spacingy = buttonsizey/buttonRow;
+    	float spacingy = buttonsizey/(buttonRow);
 		btn = new Button[buttonRow*3];
+		btnr = new Button[buttonRow];
 		
+		//Colors for the buttons on the left
 		float colors[][] = new float[3][buttonRow*3];
 		//color of the walldraw button
 		colors[0][0] = 87/255f; colors[1][0] = 84/255f; colors[2][0] = 83/255f;
@@ -198,22 +215,38 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			}
 		}
 		
-		//Create the buttons left
+		//Texts for the buttons on the left
+		String text[] = new String[30];
+		for (int i = 3; i < 30; i++){
+			text[i] = "TEMPORARY";
+		}
+		text[0] = "Wall"; text[1] = "Stairs"; text[2] = "Torch"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
+		text[29] = "No Exit";
+		
+		//Create the buttons on the left
 	   	int index = 0;
 	   	for(int row = 0;row<buttonRow;row++){
 	   		for(int col = 0;col<3;col++){
 	   			btn[index] = new Button(gl, spacingx+col*spacingx+col*buttonsizex, screenHeight - (row+1)*(spacingy+buttonsizey), 
-	   					buttonsizex, buttonsizey, colors[0][index], colors[1][index], colors[2][index]);
+	   					buttonsizex, buttonsizey, colors[0][index], colors[1][index], colors[2][index], text[index]);
 	   			index++;
 	   		 }
 	   	 }
+	  
+	   	//Texts for the buttons on the right
+	   	String textr[] = new String[10];
+	   	for (int i = 3; i < 9; i++){
+	   		textr[i] = "Level " + (i-2);
+	   	}
+	   	textr[0] = "New Maze"; textr[1] = "Load Maze"; textr[2] = "Save Maze"; textr[9] = "Exit";
 	   	
-	  //Create the buttons right
-//	  int indexr = 0;
-//	  for (int i = 0; i < buttonRow; i++){
-//		  btnr[indexr] = new Button(gl, i*40, 40, 40, 40, 0.5f, 0.5f, 0.5f);
-//		  indexr++;
-//	  }
+	   	//Create the buttons on the right
+	   	int indexr = 0;
+	   	for (int i = 0; i < buttonRow; i++){
+	   		btnr[indexr] = new Button(gl, mazeR+spacingx, screenHeight - (spacingy+spacingy*(i)+(i+1)*buttonsizey), 
+	   				(screenWidth-mazeR)-2*spacingx, buttonsizey, 0.5f, 0.5f, 0.5f, textr[indexr]);
+	   		indexr++;
+	   	}
 	}
 	
 	@Override
@@ -230,9 +263,23 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 					btn[j].setSelected(false);
 				}
 			}
-		}		
-		System.out.println("Dit is knop "+ i);
-		if(i == buttonRow*3-1){
+		}
+		
+		int k = 0;
+		k = getButtonR(me.getX(),screenHeight-me.getY());
+		//set selected button to true
+		if(k >= 0){
+			btnr[k].setSelected(true);
+			//set selected for other buttons to false
+			for(int j = 0; j < buttonRow; j++){
+				if (j != k){
+					btnr[j].setSelected(false);
+				}
+			}
+		}	
+		System.out.println("Dit is knop "+ k + " aan de rechter kant");
+		//Exit!!!!!! KAY, EXIT!!
+		if(k == 9){
 			System.exit(0);
 		}
 	}
@@ -250,9 +297,21 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			level.level[X][Y-1] = 1;
 		}
 		
+		else if (btn[11].selected){
+	   		 level = new Level(mazeX,mazeY);
+		}
+		
 		if(SwingUtilities.isRightMouseButton(me)){
 			level.level[X][Y-1] = 0;
 		}
+		
+//		if (btnr[3].selected){
+//			level = levels[0];
+//		}
+//		
+//		if (btnr[4].selected){
+//			level = levels[1];
+//		}
 		
 		//TEST
 		if (btn[11].selected == true){
