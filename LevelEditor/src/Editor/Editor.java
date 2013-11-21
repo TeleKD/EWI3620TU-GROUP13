@@ -232,7 +232,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   			index++;
 	   		 }
 	   	 }
-	  
 	   	//Texts for the buttons on the right
 	   	String textr[] = new String[10];
 	   	for (int i = 3; i < 9; i++){
@@ -270,9 +269,9 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 				}
 			}
 		}
-		
 		int k = 0;
 		k = getButtonR(me.getX(),screenHeight-me.getY());
+		
 		System.out.println(k);
 		//set selected button to true
 		
@@ -307,10 +306,15 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			}
 		}
 		if (btnr[0].selected){
-  		  level = new Level(mazeX,mazeY);
-  		  for(int j = 0; j < buttonRow*3; j++){
-  			 btn[j].setSelected(false);
-  		 }
+			for(int j = 3; j < buttonRow-1; j++){
+				if (btnr[j].selected){
+					levels[j-3] = new Level(mazeX,mazeY);
+					break;
+				}
+			} 
+	  		for(int j = 0; j < buttonRow*3; j++){
+	  			btn[j].setSelected(false);
+	  		}
 		}
 	}
 
@@ -320,8 +324,9 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		double squareY = Math.floor(((me.getY())/level.buttonsizex));
 		int X = (int) squareX;
 		int Y = mazeY - (int) squareY;
-
-		//Wall Draw
+		for(int j = 0; j<3; j++){
+   			btnr[j].setSelected(false);
+   		}
 		if (btn[0].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeY && squareY >= 0){
 			System.out.println("Hier kan getekent worden");
 			level.level[X][Y-1] = 1;
