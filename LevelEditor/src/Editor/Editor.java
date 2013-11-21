@@ -43,7 +43,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	Level level = new Level(mazeX,mazeY);
 	
 	private float gridBorder = (((mazeR-mazeL)-mazeX*level.buttonsizex)/2);
-	private Level levels[] = new Level[6];
+	private Level levels[] = new Level[nlevels];
 
 	//Button related
 	private Button btn[];
@@ -72,7 +72,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	public static void main(String[] args){
 		
 		new Editor();
-		System.out.println("Level editor started\nGenerating maze...\n");		
+		System.out.println("Level editor started\nGenerating maze...\n");
 	}
 	
 	
@@ -221,7 +221,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			text[i] = "TEMPORARY";
 		}
 		text[0] = "Wall"; text[1] = "Stairs"; text[2] = "Torch"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
-		text[29] = "No Exit";
+		text[27] = "print 0"; text[28] = "print 1"; text[29] = "Clear";
 		
 		//Create the buttons on the left
 	   	int index = 0;
@@ -247,6 +247,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   				(screenWidth-mazeR)-2*spacingx, buttonsizey, 0.5f, 0.5f, 0.5f, textr[indexr]);
 	   		indexr++;
 	   	}
+	   	
+	   	for (int k = 0; k < nlevels; k++){
+	   		levels[k] = new Level(mazeX,mazeY);
+	   	}
+	   	level = levels[0];
+	   	btnr[3].setSelected(true);
 	}
 	
 	@Override
@@ -267,20 +273,44 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		int k = 0;
 		k = getButtonR(me.getX(),screenHeight-me.getY());
+		System.out.println(k);
 		//set selected button to true
-		if(k >= 0){
+		
+		if(k >= 3){
 			btnr[k].setSelected(true);
 			//set selected for other buttons to false
-			for(int j = 0; j < buttonRow; j++){
+			for(int j = 3; j < buttonRow-1; j++){
 				if (j != k){
 					btnr[j].setSelected(false);
 				}
 			}
-		}	
+		}
+		else if(k>=0){
+	   		btnr[k].setSelected(true);;
+	   		for(int j = 0; j<3; j++){
+	   			if (j!=k){
+	   				btnr[j].setSelected(false);
+	   			}
+	   		}
+	   	}
+
 		System.out.println("Dit is knop "+ k + " aan de rechter kant");
 		//Exit!!!!!! KAY, EXIT!!
 		if(k == 9){
 			System.exit(0);
+		}
+	
+		
+		for (k = 3; k < nlevels+3; k++){
+			if (btnr[k].selected){
+				level = levels[k-3];
+			}
+		}
+		if (btnr[0].selected){
+  		  level = new Level(mazeX,mazeY);
+  		  for(int j = 0; j < buttonRow*3; j++){
+  			 btn[j].setSelected(false);
+  		 }
 		}
 	}
 
@@ -297,26 +327,18 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			level.level[X][Y-1] = 1;
 		}
 		
-		else if (btn[11].selected){
-	   		 level = new Level(mazeX,mazeY);
-		}
-		
 		if(SwingUtilities.isRightMouseButton(me)){
 			level.level[X][Y-1] = 0;
 		}
 		
-//		if (btnr[3].selected){
-//			level = levels[0];
-//		}
-//		
-//		if (btnr[4].selected){
-//			level = levels[1];
-//		}
-		
 		//TEST
-		if (btn[11].selected == true){
-			System.out.println(level.toString());
-		}	
+		if (btn[28].selected == true){
+			System.out.println(levels[1].toString());
+		}
+		if (btn[27].selected == true){
+			System.out.println(levels[0].toString());
+		}
+		
 	}
 	
 	@Override
