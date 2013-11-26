@@ -221,7 +221,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			text[i] = "TEMPORARY";
 		}
 		text[0] = "Wall"; text[1] = "Stairs"; text[2] = "Torch"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
-		text[27] = "print 0"; text[28] = "print 1"; text[29] = "Clear";
+		text[27] = "niks"; text[28] = "Clear"; text[29] = "ClearAll";
 		
 		//Create the buttons on the left
 	   	int index = 0;
@@ -252,12 +252,17 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   	}
 	   	level = levels[0];
 	   	btnr[3].setSelected(true);
+	   	btn[0].setSelected(true);
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent me) {
+		System.out.println(me.getX() + " " + me.getY());		//for development to see where the mouse is released
+		/*
+		 * The 30 buttons on the left side are defined here below
+		 * First we determine which button is selected
+		 */
 		int i;
-		System.out.println(me.getX() + " " + me.getY());
 		i = getButton(me.getX(),screenHeight-me.getY());
 		//set selected button to true
 		if(i>=0){
@@ -269,12 +274,45 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 				}
 			}
 		}
-		int k = 0;
+		/*
+		 * Now we will define the functionality of the individual buttons if they use the 
+		 * mouseReleased function
+		 */
+		
+		//Clear level button
+		if (i == 28){
+			for(int j = 3; j < buttonRow-1; j++){
+				if (btnr[j].selected){
+					levels[j-3] = new Level(mazeX,mazeY);
+					break;
+				}
+			}
+			//select the walldraw as default and de-select the current button
+			btn[28].setSelected(false);
+			btn[0].setSelected(true);
+		}
+		
+		//Clear all button
+		if (i == 29){
+			for(int j = 3; j < buttonRow-1; j++){
+				levels[j-3] = new Level(mazeX,mazeY);
+			}
+			//select the walldraw as default and de-select the current button
+			btn[29].setSelected(false);
+			btn[0].setSelected(true);
+		}
+	
+		
+		/*
+		 * The 10 buttons on the right side are defined here below
+		 * First we determine which button is selected
+		 */
+		int k;
 		k = getButtonR(me.getX(),screenHeight-me.getY());
-		
-		System.out.println(k);
-		//set selected button to true
-		
+		//DEV: System.out.println(k);
+		//DEV: System.out.println("Dit is knop "+ k + " aan de rechter kant");
+
+		//set 1 selected button to true for the level buttons
 		if(k >= 3){
 			btnr[k].setSelected(true);
 			//set selected for other buttons to false
@@ -284,6 +322,8 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 				}
 			}
 		}
+		
+		//set 1 selected button to true for the new, load and save buttons
 		else if(k>=0){
 	   		btnr[k].setSelected(true);;
 	   		for(int j = 0; j<3; j++){
@@ -293,28 +333,16 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   		}
 	   	}
 
-		System.out.println("Dit is knop "+ k + " aan de rechter kant");
-		//Exit!!!!!! KAY, EXIT!!
+		//The Exit button on the bottom-right
 		if(k == 9){
 			System.exit(0);
 		}
-	
 		
+		//Check which level-button is selected
 		for (k = 3; k < nlevels+3; k++){
 			if (btnr[k].selected){
 				level = levels[k-3];
 			}
-		}
-		if (btnr[0].selected){
-			for(int j = 3; j < buttonRow-1; j++){
-				if (btnr[j].selected){
-					levels[j-3] = new Level(mazeX,mazeY);
-					break;
-				}
-			} 
-	  		for(int j = 0; j < buttonRow*3; j++){
-	  			btn[j].setSelected(false);
-	  		}
 		}
 	}
 
@@ -324,31 +352,22 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		double squareY = Math.floor(((me.getY())/level.buttonsizex));
 		int X = (int) squareX;
 		int Y = mazeY - (int) squareY;
-		for(int j = 0; j<3; j++){
-   			btnr[j].setSelected(false);
-   		}
+		
+		//The wall draw button
 		if (btn[0].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeY && squareY >= 0){
-			System.out.println("Hier kan getekent worden");
+			//System.out.println("Hier kan getekent worden");
 			level.level[X][Y-1] = 1;
 		}
 		
+		//The right mouse button always draws an empty floor tile
 		if(SwingUtilities.isRightMouseButton(me)){
 			level.level[X][Y-1] = 0;
 		}
-		
-		//TEST
-		if (btn[28].selected == true){
-			System.out.println(levels[1].toString());
-		}
-		if (btn[27].selected == true){
-			System.out.println(levels[0].toString());
-		}
-		
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent me){
-		//System.out.println("Versleept");
+		//The wall and floor draw buttons can be dragged for easier drawing
 		if(btn[0].selected || SwingUtilities.isRightMouseButton(me)){
 			mousePressed(me);
 		}
@@ -365,4 +384,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	public void mouseEntered(MouseEvent arg0) {/*NOT USED*/}
 	@Override
 	public void mouseExited(MouseEvent arg0) {/*NOT USED*/}
+
+	public void setMazeX(int mazeX) {
+		this.mazeX = mazeX;
+	}
+
+	public void setLevels(Level[] levels) {
+		this.levels = levels;
+	}
 }
