@@ -325,13 +325,20 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		//set 1 selected button to true for the new, load and save buttons
 		else if(k>=0){
-	   		btnr[k].setSelected(true);;
+	   		btnr[k].setSelected(true);
 	   		for(int j = 0; j<3; j++){
 	   			if (j!=k){
 	   				btnr[j].setSelected(false);
 	   			}
 	   		}
 	   	}
+		
+		if (k == 0){
+			toFront();
+			new New();
+			btnr[0].setSelected(false);
+			//mazeX = New.levelsize;
+		}
 
 		//The Exit button on the bottom-right
 		if(k == 9){
@@ -361,7 +368,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		//The right mouse button always draws an empty floor tile
 		if(SwingUtilities.isRightMouseButton(me)){
-			level.level[X][Y-1] = 0;
+			try{
+				level.level[X][Y-1] = 0;
+			}
+			catch (ArrayIndexOutOfBoundsException ex){
+				//System.err.println("you are drawing out of bounds");
+			}
 		}
 	}
 	

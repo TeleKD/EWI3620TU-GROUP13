@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class New extends Editor implements ActionListener{
+public class New extends JFrame implements ActionListener{
 	
 	private JFrame frame = new JFrame("New Maze");
 	private JButton newmaze = new JButton("Create New Maze");
@@ -31,9 +31,10 @@ public class New extends Editor implements ActionListener{
 	public New() {
 		//Creating the window
 	    frame.setSize(200, 120);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setVisible(true);
 	    frame.setResizable(false);
+	    frame.toFront();
 	    
 	    newmaze.addActionListener(this);
 	    
@@ -76,6 +77,5 @@ public class New extends Editor implements ActionListener{
 		System.out.println("The levelsize is currently: " + levelsize);
 		//Number of levels
 		System.out.println("The number of levels is currently: " + levels);
-		
 	}
 }
