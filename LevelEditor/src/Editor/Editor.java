@@ -1,28 +1,45 @@
 package Editor;
 
+//TODO levelknoppen tot 12 laten lopen of maximale waarde op 6 zetten
+//aangezien we knoppen genoeg hebben, misschien voor de stairs 2 knoppen maken, 1 voor laag en 1 voor hoog, dan kunnen we
+//deze ook nog als objecten in het level plaatsen
+//voor torches kunnen we torch -n -e -s -w maken zodat we de plek van de torch kunnen aangeven, dit kan wellicht ook met loot
+//even overleggen met de groep
+
+
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 
 import java.awt.event.MouseMotionListener;
-import java.util.Arrays;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import com.sun.opengl.util.Animator;
 
 
-public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener {
+public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener, ActionListener {
 
+	/**
+	 * This is the LevelEditor for DungThis. With this editor mazes consisting of 1 to 12 levels can be
+	 * designed.
+	 */
+	private static final long serialVersionUID = -1698109322093496405L;
 	//Graphic related variables
 	private GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	private int screenWidth = gd.getDisplayMode().getWidth();
@@ -30,30 +47,34 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	private GLCanvas canvas;
 	
 	//Maze related variables
-	private int mazeX = 10;						//number of X-squares, 10 entered for testing
-	private int mazeY = mazeX;
+	private int mazeX = 9;						//number of X-squares, 10 entered for testing
 	private int nlevels = 6;									//number of levels in the maze
 	private int buttonRow = 10;
 	private float mazeL = ((screenWidth-screenHeight)/3*2);					//Left bound of mazeDrawingWindow
 	private float mazeR = screenWidth-((screenWidth-screenHeight)/3);		//Right bound of mazeDrawingWindow
 	
-	//creates a level with walls on the borders
-	//This is only for testing purposes TODO create a level in the JFrame popup when the user
-	//clicks the "new level" button, then find a way to correspond that level to 1 of the 10 levels buttons
-	Level level = new Level(mazeX,mazeY);
-	
-	private float gridBorder = (((mazeR-mazeL)-mazeX*level.buttonsizex)/2);
-	private Level levels[] = new Level[nlevels];
+	//creates the initial levels with walls on the borders
+	private Level level = new Level(mazeX,mazeX);
+	private Level[] levels = new Level[nlevels];
 
 	//Button related
 	private Button btn[];
-	private Button btnr[];		
+	private Button btnr[];	
+	
+	//New Maze Menu variables
+	JTextField size = new JTextField();
+	JTextField nlev = new JTextField();
+	JFrame frame = new JFrame("Create New Maze");
+	JButton newmaze = new JButton("Create New Maze");
+	JPanel panels = new JPanel(); //the south panel
+	JPanel paneln = new JPanel(); //the north panel
+	JLabel sizel = new JLabel("Level size(3-63): ");
+	JLabel nlevl = new JLabel("Number of levels (1-12): ");
 
 	
 	public Editor() {
-		super("Level Editor v0.2");
+		super("Level Editor v0.5");
 		setSize(screenWidth, screenHeight);
-		//setBackground(new Color(0.5f, 0.4f, 0.1f)); //doet niks
 		GLCapabilities caps = new GLCapabilities();
 		caps.setDoubleBuffered(true);
 		caps.setHardwareAccelerated(true);
@@ -120,22 +141,13 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		return i;
 	}
 	
-	
-	public int getScreenWidth() {
-		return screenWidth;
-	}
-
-	public int getScreenHeight() {
-		return screenHeight;
-	}
-	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 
 		GL gl = drawable.getGL();
 
 		// Set the clear color and clear the screen.
-		gl.glClearColor(75/255f, 94/255f, 127/255f, 1);
+		gl.glClearColor(255/255f, 238/255f, 131/255f, 1);
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
 		// Draw the buttons.
@@ -148,13 +160,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		gl.glFlush();
 	}
 
-	@Override
-	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	// TODO nog te optimaliseren en volledig te begrijpen
+
 	@Override
 	public void init(GLAutoDrawable drawable) {
 
@@ -215,13 +221,16 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			}
 		}
 		
+		//color of the void button
+		colors[0][27] = 0/255f; colors[1][27] = 0/255f; colors[2][27] = 0/255f;
+		
 		//Texts for the buttons on the left
 		String text[] = new String[30];
 		for (int i = 3; i < 30; i++){
 			text[i] = "TEMPORARY";
 		}
 		text[0] = "Wall"; text[1] = "Stairs"; text[2] = "Torch"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
-		text[27] = "niks"; text[28] = "Clear"; text[29] = "ClearAll";
+		text[27] = "Void"; text[28] = "Clear"; text[29] = "ClearAll";
 		
 		//Create the buttons on the left
 	   	int index = 0;
@@ -237,7 +246,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   	for (int i = 3; i < 9; i++){
 	   		textr[i] = "Level " + (i-2);
 	   	}
-	   	textr[0] = "New Maze"; textr[1] = "Load Maze"; textr[2] = "Save Maze"; textr[9] = "Exit";
+	   	textr[0] = "New Maze"; textr[1] = "Save Maze"; textr[2] = "Load Maze"; textr[9] = "Exit";
 	   	
 	   	//Create the buttons on the right
 	   	int indexr = 0;
@@ -248,10 +257,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	   	}
 	   	
 	   	for (int k = 0; k < nlevels; k++){
-	   		levels[k] = new Level(mazeX,mazeY);
+	   		levels[k] = new Level(mazeX,mazeX);
 	   	}
 	   	level = levels[0];
+	   	//set level button default to level 1
 	   	btnr[3].setSelected(true);
+	   	//set default to walldraw
 	   	btn[0].setSelected(true);
 	}
 	
@@ -283,7 +294,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		if (i == 28){
 			for(int j = 3; j < buttonRow-1; j++){
 				if (btnr[j].selected){
-					levels[j-3] = new Level(mazeX,mazeY);
+					levels[j-3] = new Level(mazeX,mazeX);
 					break;
 				}
 			}
@@ -295,7 +306,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		//Clear all button
 		if (i == 29){
 			for(int j = 3; j < buttonRow-1; j++){
-				levels[j-3] = new Level(mazeX,mazeY);
+				levels[j-3] = new Level(mazeX,mazeX);
 			}
 			//select the walldraw as default and de-select the current button
 			btn[29].setSelected(false);
@@ -324,7 +335,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
 		//set 1 selected button to true for the new, load and save buttons
-		else if(k>=0){
+		if(k >= 0){
 	   		btnr[k].setSelected(true);
 	   		for(int j = 0; j<3; j++){
 	   			if (j!=k){
@@ -335,9 +346,33 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		if (k == 0){
 			toFront();
-			new New();
+			frame.setAlwaysOnTop(true);
+		    frame.setSize(250, 120);
+		    frame.setVisible(true);
+		    frame.setResizable(false);
+		    frame.toFront();
+		    
+		    newmaze.addActionListener(this);
+		    
+		    size.setPreferredSize(new Dimension(30,20));
+		    nlev.setPreferredSize(new Dimension(30,20));
+		    
+		    paneln.setBackground(Color.WHITE);
+		    paneln.add(sizel);
+		    paneln.add(size);
+		    paneln.add(nlevl);
+		    paneln.add(nlev);
+		    paneln.add(newmaze);
+		    //add the panel to the frame
+		    frame.add(paneln);
+		    
 			btnr[0].setSelected(false);
-			//mazeX = New.levelsize;
+			frame.toFront();
+		}
+		
+		if (k == 1){
+			System.out.println(level.toString());
+			btnr[1].setSelected(false);
 		}
 
 		//The Exit button on the bottom-right
@@ -355,15 +390,21 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 
 	@Override
 	public void mousePressed(MouseEvent me) {
-		double squareX = Math.floor(((me.getX() - (mazeL + gridBorder))/level.buttonsizex)+mazeX/2);   //waarom mazeX/2?
-		double squareY = Math.floor(((me.getY())/level.buttonsizex));
+		double squareX = Math.floor( ( (me.getX() - (mazeL)) / level.buttonSize));   //waarom mazeX/2?
+		double squareY = Math.floor(((me.getY())/level.buttonSize));
 		int X = (int) squareX;
-		int Y = mazeY - (int) squareY;
+		int Y = mazeX - (int) squareY;
 		
 		//The wall draw button
-		if (btn[0].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeY && squareY >= 0){
+		if (btn[0].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
 			//System.out.println("Hier kan getekent worden");
 			level.level[X][Y-1] = 1;
+		}
+		
+		//The Void draw button
+		if (level != levels[0] && btn[27].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			//System.out.println("Hier kan getekent worden");
+			level.level[X][Y-1] = 4;
 		}
 		
 		//The right mouse button always draws an empty floor tile
@@ -380,12 +421,49 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	@Override
 	public void mouseDragged(MouseEvent me){
 		//The wall and floor draw buttons can be dragged for easier drawing
-		if(btn[0].selected || SwingUtilities.isRightMouseButton(me)){
+		if(btn[0].selected || SwingUtilities.isRightMouseButton(me) || btn[27].selected){
 			mousePressed(me);
 		}
 		
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Button Pressed");
+		
+		try{
+			mazeX = Integer.parseInt(size.getText());
+			nlevels = Integer.parseInt(nlev.getText());
+		}
+		catch (NumberFormatException ex){
+			System.err.println("One or more invalid numbers were entered");
+		}
+		
+		if (mazeX < 3 || mazeX > 63){
+			mazeX = 63;
+		}
+		if (nlevels < 1 || nlevels > 12){
+			nlevels = 12;
+		}
+		
+		level = new Level(mazeX,mazeX);
+		levels = new Level[nlevels];
+		
+	   	for (int k = 0; k < nlevels; k++){
+	   		levels[k] = new Level(mazeX,mazeX);
+	   	}
+	   	
+	   	level = levels[0]; 	
 
+	   	if (mazeX > 25){
+	   		level.lineWidth = 1;
+	   	}
+
+	   	frame.dispose();
+	}
+
+	@Override
+	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {/* NOT USED */}
 	@Override
 	public void mouseMoved(MouseEvent arg0) {/*NOT USED*/}
 	@Override
@@ -396,12 +474,4 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	public void mouseEntered(MouseEvent arg0) {/*NOT USED*/}
 	@Override
 	public void mouseExited(MouseEvent arg0) {/*NOT USED*/}
-
-	public void setMazeX(int mazeX) {
-		this.mazeX = mazeX;
-	}
-
-	public void setLevels(Level[] levels) {
-		this.levels = levels;
-	}
 }
