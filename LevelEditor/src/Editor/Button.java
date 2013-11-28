@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
+import com.sun.opengl.util.texture.Texture;
 
 public class Button {
 	
@@ -15,10 +16,12 @@ public class Button {
 	private float R;
 	private float G;
 	private float B;
+	private float O;
 	protected boolean selected;
 	private String text;
+	private Texture texture;
 	
-	public Button(GL gl, float x, float y, float sizex, float sizey, float R, float G, float B, String text){
+	public Button(GL gl, float x, float y, float sizex, float sizey, float R, float G, float B, float O, String text){
 		this.x = x;
 		this.y = y;
 		this.sizex = sizex;
@@ -26,6 +29,7 @@ public class Button {
 		this.R = R;
 		this.G = G;
 		this.B = B;
+		this.O = O;
 		this.text = text;
 	}
 	
@@ -33,9 +37,9 @@ public class Button {
 		
 		gl.glLineWidth(1);
 		//Step 1: Draw the button
-		gl.glColor3f(R,G,B);
+		gl.glColor4f(R,G,B,O);
 		boxOnScreen(gl,x,y,sizex,sizey);
-		
+	
 		//Step 2: Draw text on the button
 		gl.glColor3f(1, 1, 1);
 		gl.glPushMatrix();
@@ -66,12 +70,26 @@ public class Button {
 	}
 	
 	public void boxOnScreen(GL gl, float x, float y, float sizex, float sizey) {
+		
+		if (texture != null) {
+			texture.enable();
+			texture.bind();
+		}
+		
 		gl.glBegin(GL.GL_POLYGON);
+		gl.glTexCoord2f(0,1);
 		gl.glVertex2f(x, y);
+		gl.glTexCoord2f(1,1);
 		gl.glVertex2f(x + sizex, y);
+		gl.glTexCoord2f(1,0);
 		gl.glVertex2f(x + sizex, y + sizey);
+		gl.glTexCoord2f(0,0);
 		gl.glVertex2f(x, y + sizey);
 		gl.glEnd();
+		
+		if (texture != null) {
+			texture.disable();
+		}
 	}
 	
 	public void setSelected(boolean selected){
@@ -115,6 +133,14 @@ public class Button {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public Texture getTexture() {
+		return texture;
+	}
+
+	public void setTexture(Texture texture) {
+		this.texture = texture;
 	}
 	
 
