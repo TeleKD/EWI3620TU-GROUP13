@@ -155,7 +155,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		// Set the clear color and clear the screen.
 		gl.glClearColor(255/255f, 238/255f, 131/255f, 1);
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-
+		
 		// Draw the buttons.
 		Buttons(gl);
 		
@@ -231,6 +231,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		for (int i = 0; i < 3; i++){
 			for (int j = 2; j < 30; j++){
 				colors[i][j] = /*(float) Math.random();*/0.5f;
+				colors[3][j] = 1.0f;
 			}
 		}
 		
@@ -238,7 +239,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		colors[0][0] = 87/255f; colors[1][0] = 84/255f; colors[2][0] = 83/255f; colors[3][0] = 1.0f;
 		
 		//background color of the stairsL button1
-		colors[0][1] = 230/255f; colors[1][1] = 230/255f; colors[2][1] = 230/255f; colors[3][1] = 0.0f;
+		colors[0][1] = 230/255f; colors[1][1] = 230/255f; colors[2][1] = 230/255f; colors[3][1] = 1.0f;
 		
 		//background color of the stairsH button2
 		colors[0][2] = 230/255f; colors[1][2] = 230/255f; colors[2][2] = 230/255f; colors[3][2] = 1.0f; //4e doet nog niks, iets met glblendfunc
@@ -256,7 +257,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			}
 		}
 		text[0] = "Wall"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
-		text[6] = "Torch";
+		text[6] = "TorchN"; text[7] = "TorchE"; text[8] = "TorchS"; text[9] = "TorchW"; 
 		text[27] = "Void"; text[28] = "Clear"; text[29] = "ClearAll";
 		
 		//Create the buttons on the left
@@ -300,10 +301,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	
 	@Override
 	public void mouseReleased(MouseEvent me) {
-//		double squareX = Math.floor( ( (me.getX() - (mazeL)) / level.buttonSize));
-//		double squareY = Math.floor(((me.getY())/level.buttonSize));
-//		int X = (int) squareX;
-//		int Y = mazeX - (int) squareY;
 		
 		System.out.println(me.getX() + " " + me.getY());		//for development to see where the mouse is released
 		/*
@@ -322,6 +319,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 				}
 			}
 		}
+		
 		/*
 		 * Now we will define the functionality of the individual buttons if they use the 
 		 * mouseReleased function
@@ -448,8 +446,28 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			level.level[X][Y-1] = 8;
 		}
 		
+		//TorchN draw button
+		if (btn[6].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			level.level[X][Y-1] = 2;
+		}
+		
+		//TorchE draw button
+		if (btn[7].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			level.level[X][Y-1] = 3;
+		}
+		
+		//TorchS draw button
+		if (btn[8].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			level.level[X][Y-1] = 5;
+		}
+		
+		//TorchW draw button
+		if (btn[9].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			level.level[X][Y-1] = 7;
+		}
+		
 		//The Void draw button
-		if (level != levels[0] && btn[27].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+		if (btn[27].selected == true && level != levels[0] && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
 			//System.out.println("Hier kan getekent worden");
 			level.level[X][Y-1] = 4;
 		}
