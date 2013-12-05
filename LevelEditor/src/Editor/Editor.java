@@ -1,12 +1,5 @@
 package Editor;
 
-//TODO levelknoppen tot 12 laten lopen of maximale waarde op 6 zetten
-//aangezien we knoppen genoeg hebben, misschien voor de stairs 2 knoppen maken, 1 voor laag en 1 voor hoog, dan kunnen we
-//deze ook nog als objecten in het level plaatsen
-//voor torches kunnen we torch -n -e -s -w maken zodat we de plek van de torch kunnen aangeven, dit kan wellicht ook met loot
-//even overleggen met de groep
-
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -15,10 +8,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -26,11 +21,13 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.texture.Texture;
@@ -40,7 +37,7 @@ import com.sun.opengl.util.texture.TextureIO;
 public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener, ActionListener {
 
 	/**
-	 * This is the LevelEditor for DungThis. With this editor mazes consisting of 1 to 12 levels can be
+	 * This is the LevelEditor for DungThis. With this editor mazes consisting of 1 to 6 levels can be
 	 * designed.
 	 */
 	private static final long serialVersionUID = -1698109322093496405L;
@@ -52,7 +49,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	
 	//Maze related variables
 	private int mazeX = 9;						//number of X-squares, 10 entered for testing
-	private int nlevels = 6;									//number of levels in the maze
+	protected int nlevels = 6;									//number of levels in the maze
 	private int buttonRow = 10;
 	private float mazeL = ((screenWidth-screenHeight)/3*2);					//Left bound of mazeDrawingWindow
 	private float mazeR = screenWidth-((screenWidth-screenHeight)/3);		//Right bound of mazeDrawingWindow
@@ -72,7 +69,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	private JButton newmaze = new JButton("Create New Maze");
 	private JPanel paneln = new JPanel(); //the north panel
 	private JLabel sizel = new JLabel("Level size(3-63): ");
-	private JLabel nlevl = new JLabel("Number of levels (1-12): ");
+	private JLabel nlevl = new JLabel("Number of levels (1-6): ");
 	
 	private Texture[] textureLeft;
 	private Texture[] textureRight;
@@ -117,7 +114,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			btn[i].draw(gl);
 		}
 		
-		//left row of buttons
+		//right row of buttons
 		for (int i = 0; i < buttonRow; i++){
 			btnr[i].draw(gl);
 		}	
@@ -359,7 +356,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		//DEV: System.out.println("Dit is knop "+ k + " aan de rechter kant");
 
 		//set 1 selected button to true for the level buttons
-		if(k >= 3){
+		if(k >= 3 && k < nlevels+3){
 			btnr[k].setSelected(true);
 			//set selected for other buttons to false
 			for(int j = 3; j < buttonRow-1; j++){
@@ -370,7 +367,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
 		//set 1 selected button to true for the new, load and save buttons
-		if(k >= 0){
+		if(k >= 0 && k < 3){
 	   		btnr[k].setSelected(true);
 	   		for(int j = 0; j<3; j++){
 	   			if (j!=k){
@@ -405,8 +402,94 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			frame.toFront();
 		}
 		
+		//Loading a file
+		if (k == 2){
+//		    JFileChooser chooser = new JFileChooser();
+//		    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//		        "JPG & GIF Images", "jpg", "gif");
+//		    chooser.setFileFilter(filter);
+//		    int returnVal = chooser.showOpenDialog(this);
+//		    if(returnVal == JFileChooser.APPROVE_OPTION) {
+//		       System.out.println("You chose to open this file: " +
+//		            chooser.getSelectedFile().getName());
+//		    }
+			
+			
+			System.out.println("Start Loading...");			
+			try{	 
+				FileInputStream fmaze = new FileInputStream("mazes\\test.maze");
+				ObjectInputStream omaze = new ObjectInputStream(fmaze);
+				
+				nlevels = (int) omaze.readObject();
+				mazeX = (int) omaze.readObject();
+				
+				
+				int[][] firstLevel = (int[][]) omaze.readObject();
+				int x = firstLevel.length;
+				
+				mazeX = x;
+			
+				level = new Level(mazeX,mazeX);
+				levels = new Level[nlevels];
+				
+			   	for (int b = 0; b < nlevels; b++){
+			   		levels[b] = new Level(mazeX,mazeX);
+			   	}
+			   	
+			   	level = levels[0];
+			   	btnr[3].setSelected(true);
+			   	for (int c = 4; c < 9; c++){
+			   		btnr[c].setSelected(false);
+			   	}
+				
+				level.setX(x);
+				level.setY(x);
+				
+				int n = 0;
+				
+				int[][] nextLevel;
+				levels[n].setLevel(firstLevel);
+				for ( n=1; n<nlevels; n++){
+					nextLevel = (int[][]) omaze.readObject();
+					if (nextLevel != null) {
+						levels[n].setLevel(nextLevel);
+					}
+					else break;
+				}		
+				omaze.close();	
+			}
+				
+			catch(Exception ex){
+				ex.printStackTrace();
+			}
+			
+			System.out.println(mazeX + " " + nlevels + " ");
+			System.out.println("Loading Completed!");
+			btnr[2].setSelected(false);
+			
+		}
+		
+		//Saving a file
 		if (k == 1){
-			System.out.println(level.toString());
+			System.out.println("Starting Save");
+			
+			try{
+				FileOutputStream fmaze = new FileOutputStream("mazes\\test.maze");
+				ObjectOutputStream omaze = new ObjectOutputStream(fmaze);
+				omaze.writeObject(nlevels);
+				omaze.writeObject(mazeX);
+				for (int n = 0; n < nlevels; n++){
+					int[][] writeLevel = levels[n].getLevel();
+					omaze.writeObject(writeLevel);
+				}
+				omaze.flush();
+				omaze.close();
+		 
+			   }catch(Exception ex){
+				   ex.printStackTrace();
+			   }
+			
+			System.out.println("Save Completed!");
 			btnr[1].setSelected(false);
 		}
 
@@ -496,20 +579,21 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("Button Pressed");
 		
-		try{
-			mazeX = Integer.parseInt(size.getText());
-			nlevels = Integer.parseInt(nlev.getText());
-		}
-		catch (NumberFormatException ex){
-			System.err.println("One or more invalid numbers were entered");
-		}
+		mazeX = 0;
+		nlevels = 0;
+		
+		try{nlevels = Integer.parseInt(nlev.getText());}
+		catch (NumberFormatException ex){System.out.println("One or more invalid numbers were entered");}
+		
+		try{mazeX = Integer.parseInt(size.getText());}
+		catch (NumberFormatException ex){System.out.println("One or more invalid numbers were entered");}
 		
 		if (mazeX < 3 || mazeX > 63){
 			mazeX = 63;
 		}
 		
-		if (nlevels < 1 || nlevels > 12){
-			nlevels = 12;
+		if (nlevels < 1 || nlevels > 6){
+			nlevels = 6;
 		}
 		
 		level = new Level(mazeX,mazeX);

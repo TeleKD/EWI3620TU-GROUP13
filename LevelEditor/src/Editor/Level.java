@@ -1,14 +1,19 @@
 package Editor;
 
 import java.io.File;
+import java.io.Serializable;
 
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
-public class Level {
+public class Level implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8386177990027960325L;
 	protected int[][] level;
 	private int x;
 	private int y;
@@ -198,5 +203,21 @@ public class Level {
 		return res;
 	}
 	
+	public int[][] getLevel() {
+		return level;
+	}
+	
 	public static void main(String[] args) { /* Not Used */ }
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public void setLevel(int[][] level) {
+		this.level = level;
+	}
 }
