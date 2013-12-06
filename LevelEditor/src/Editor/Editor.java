@@ -1,12 +1,5 @@
 package Editor;
 
-//TODO levelknoppen tot 12 laten lopen of maximale waarde op 6 zetten
-//aangezien we knoppen genoeg hebben, misschien voor de stairs 2 knoppen maken, 1 voor laag en 1 voor hoog, dan kunnen we
-//deze ook nog als objecten in het level plaatsen
-//voor torches kunnen we torch -n -e -s -w maken zodat we de plek van de torch kunnen aangeven, dit kan wellicht ook met loot
-//even overleggen met de groep
-
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -42,11 +35,10 @@ import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
-
 public class Editor extends JFrame implements GLEventListener, MouseListener, MouseMotionListener, ActionListener {
 
 	/**
-	 * This is the LevelEditor for DungThis. With this editor mazes consisting of 1 to 12 levels can be
+	 * This is the LevelEditor for AwesomeGame. With this editor mazes consisting of 1 to 12 levels can be
 	 * designed.
 	 */
 	private static final long serialVersionUID = -1698109322093496405L;
@@ -105,13 +97,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		setResizable(false);
 		setVisible(true);
 	}
-	
+
 	public static void main(String[] args){
 		new Editor();
 		System.out.println("Level editor started\nGenerating maze...\n");
 	}
-	
-	
+
 	public void drawLevel(GL gl){
 		level.draw(gl, mazeL, 0, mazeR-mazeL, screenHeight);
 	   	if (mazeX > 19){
@@ -175,7 +166,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		gl.glFlush();
 	}
 
-
 	@Override
 	public void init(GLAutoDrawable drawable) {
 
@@ -217,10 +207,12 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 //		System.out.println(x);
 		
 		//Creating the left buttonmenu
+		//Vierkante knoppen?
 		float buttonsizex = mazeL/4;
-    	float spacingx = buttonsizex/4;
     	float buttonsizey = screenHeight/(buttonRow+1);
     	float spacingy = buttonsizey/(buttonRow);
+    	float spacingx = buttonsizex/4;
+    	
 		btn = new Button[buttonRow*3];
 		btnr = new Button[buttonRow];
 		textureLeft = new Texture[buttonRow*3];
@@ -251,10 +243,10 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		colors[0][0] = 87/255f; colors[1][0] = 84/255f; colors[2][0] = 83/255f; colors[3][0] = 1.0f;
 		
 		//background color of the stairsL button1
-		colors[0][1] = 230/255f; colors[1][1] = 230/255f; colors[2][1] = 230/255f; colors[3][1] = 1.0f;
+		colors[0][1] = 255/255f; colors[1][1] = 255/255f; colors[2][1] = 255/255f; colors[3][1] = 1.0f;
 		
 		//background color of the stairsH button2
-		colors[0][2] = 230/255f; colors[1][2] = 230/255f; colors[2][2] = 230/255f; colors[3][2] = 1.0f; //4e doet nog niks, iets met glblendfunc
+		colors[0][2] = 255/255f; colors[1][2] = 255/255f; colors[2][2] = 255/255f; colors[3][2] = 1.0f;
 		
 		//color of the void button27
 		colors[0][27] = 0/255f; colors[1][27] = 0/255f; colors[2][27] = 0/255f; colors[3][27] = 1.0f;
@@ -426,14 +418,17 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		//Saving a file
         if (k == 1){
+        	toFront();
             System.out.println("Starting Save");
-            
             chooser.setFileFilter(filter);
             chooser.setCurrentDirectory(file);
             returnVal = chooser.showSaveDialog(Editor.this);
-            toFront();
             if(returnVal == JFileChooser.APPROVE_OPTION) {
-                file = chooser.getSelectedFile();                
+                file = chooser.getSelectedFile();
+                String path = file.getAbsolutePath();
+                if(!path.endsWith(".maze")){
+                	file = new File(path + ".maze");
+                }
                 System.out.println(chooser.getSelectedFile().getName() + " saved.");
             }
                         
@@ -459,12 +454,11 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
         
         //Loading a file
         if (k == 2){
+        	toFront();
             System.out.println("Start Loading...");
-            
             chooser.setFileFilter(filter);
             chooser.setCurrentDirectory(file);
             returnVal = chooser.showOpenDialog(Editor.this);
-            toFront();
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                 file = chooser.getSelectedFile();                
                 System.out.println(chooser.getSelectedFile().getName() + " loaded.");
@@ -601,7 +595,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
         //Player Spawn button
-        if (SwingUtilities.isLeftMouseButton(me) && btn[26].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+        if (SwingUtilities.isLeftMouseButton(me) && btn[26].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && level.check(X,Y-1,97) == false){
             for(int a = 0; a < mazeX; a++){
                 for(int b = 0; b < mazeX; b++){
                     if (level.level[a][b] == 97){
@@ -614,16 +608,8 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		
 		//The Void draw button
 		if (btn[27].selected == true && level != levels[0] && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && level.level[X][Y-1] != 97){
-			//System.out.println("Hier kan getekent worden");
-			if(level.level[X][Y-1] == 0){
-			    level.level[X][Y-1] = 17;
-			}
-			else{
-			    level.level[X][Y-1] *= 17;
-			}
+			level.level[X][Y-1] = 17;
 		}
-		
-		
 		
 		//The right mouse button always draws an empty floor tile
 		if(SwingUtilities.isRightMouseButton(me)){

@@ -52,7 +52,7 @@ public class Level {
 			textureMaze[11] = TextureIO.newTexture(new File("img\\StairsL.png"), false);
 			textureMaze[7] = TextureIO.newTexture(new File("img\\TorchW.png"), false);
 			textureMaze[13] = TextureIO.newTexture(new File("img\\StairsH.png"), false);
-			textureMaze[97] = TextureIO. newTexture(new File("img\\Player.png"), false);
+			textureMaze[97] = TextureIO.newTexture(new File("img\\Player.png"), false);
 			//textureMaze[9] = TextureIO.newTexture(new File("img\\StairsH.png"), false);
 		} 
 		catch (Exception e) {
@@ -289,7 +289,7 @@ public class Level {
         if(number>1){
             System.out.println("Error: Not all prime factors are given, primeNumbers array too small.");
             objects[0] = -1;
-            //System.exit(0);
+            System.exit(0);
         }		
 		
 		for(int l = 0;l<objects.length;l++){
