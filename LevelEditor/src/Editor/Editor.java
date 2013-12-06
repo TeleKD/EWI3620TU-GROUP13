@@ -585,7 +585,8 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
 		//TorchW draw button
-		if (btn[9].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && level.level[X][Y-1] != 97 && level.check(X,Y-1,7) == false){
+		if (btn[9].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && 
+				level.level[X][Y-1] != 97 && level.check(X,Y-1,7) == false){
 			if(level.level[X][Y-1] == 0){
 			    level.level[X][Y-1] = 7;
 			}
@@ -595,19 +596,23 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		
         //Player Spawn button
-        if (SwingUtilities.isLeftMouseButton(me) && btn[26].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && level.check(X,Y-1,97) == false){
+        if (SwingUtilities.isLeftMouseButton(me) && btn[26].selected == true && squareX >= 0 && squareX < mazeX && 
+        		squareY < mazeX && squareY >= 0 && level.level[X][Y-1] != 97){
             for(int a = 0; a < mazeX; a++){
                 for(int b = 0; b < mazeX; b++){
-                    if (level.level[a][b] == 97){
-                        level.level[a][b] = 0;
-                    }            
+                	for (int c = 0; c < nlevels; c++){
+	                    if (levels[c].level[a][b] == 97){
+	                        levels[c].level[a][b] = 0;
+	                    }
+                	}
                 }
             }
             level.level[X][Y-1] = 97;
         }
 		
 		//The Void draw button
-		if (btn[27].selected == true && level != levels[0] && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0 && level.level[X][Y-1] != 97){
+		if (btn[27].selected == true && level != levels[0] && squareX >= 0 && squareX < mazeX && squareY < mazeX && 
+				squareY >= 0 && level.level[X][Y-1] != 97){
 			level.level[X][Y-1] = 17;
 		}
 		
