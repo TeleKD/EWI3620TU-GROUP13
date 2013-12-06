@@ -70,6 +70,10 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 	private JPanel paneln = new JPanel(); //the north panel
 	private JLabel sizel = new JLabel("Level size(3-63): ");
 	private JLabel nlevl = new JLabel("Number of levels (1-6): ");
+	private JFileChooser chooser = new JFileChooser();
+	File file = new File("mazes\\test.maze");
+	FileNameExtensionFilter filter = new FileNameExtensionFilter(".maze files", "maze");
+	int returnVal;
 	
 	private Texture[] textureLeft;
 	private Texture[] textureRight;
@@ -98,7 +102,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		new Editor();
 		System.out.println("Level editor started\nGenerating maze...\n");
 	}
-	
 	
 	public void drawLevel(GL gl){
 		level.draw(gl, mazeL, 0, mazeR-mazeL, screenHeight);
@@ -239,7 +242,10 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		colors[0][1] = 230/255f; colors[1][1] = 230/255f; colors[2][1] = 230/255f; colors[3][1] = 1.0f;
 		
 		//background color of the stairsH button2
-		colors[0][2] = 230/255f; colors[1][2] = 230/255f; colors[2][2] = 230/255f; colors[3][2] = 1.0f; //4e doet nog niks, iets met glblendfunc
+		colors[0][2] = 230/255f; colors[1][2] = 230/255f; colors[2][2] = 230/255f; colors[3][2] = 1.0f;
+		
+		//color of the void button26
+		colors[0][26] = 0/255f; colors[1][26] = 0/255f; colors[2][26] = 255/255f; colors[3][26] = 1.0f;
 		
 		//color of the void button27
 		colors[0][27] = 0/255f; colors[1][27] = 0/255f; colors[2][27] = 0/255f; colors[3][27] = 1.0f;
@@ -255,7 +261,7 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		}
 		text[0] = "Wall"; text[3] = "Door"; text[4] = "Chest"; text[5] = "Food";
 		text[6] = "TorchN"; text[7] = "TorchE"; text[8] = "TorchS"; text[9] = "TorchW"; 
-		text[27] = "Void"; text[28] = "Clear"; text[29] = "ClearAll";
+		text[25] = "LtoString"; text[26] = "Player"; text[27] = "Void"; text[28] = "Clear"; text[29] = "ClearAll";
 		
 		//Create the buttons on the left
 	   	int index = 0;
@@ -321,6 +327,13 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		 * Now we will define the functionality of the individual buttons if they use the 
 		 * mouseReleased function
 		 */		
+		
+		//print level to console
+		if (i == 25){
+			System.out.println(level.toString());
+			btn[25].setSelected(false);
+		}
+		
 		
 		//Clear level button
 		if (i == 28){
@@ -402,22 +415,54 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			frame.toFront();
 		}
 		
+		//Saving a file
+		if (k == 1){
+			System.out.println("Starting Save");
+			
+			chooser.setFileFilter(filter);
+			chooser.setCurrentDirectory(file);
+			returnVal = chooser.showSaveDialog(Editor.this);
+			toFront();
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				file = chooser.getSelectedFile();		    	
+				System.out.println(chooser.getSelectedFile().getName() + " saved.");
+		    }
+						
+			try{
+				FileOutputStream fmaze = new FileOutputStream(file);
+				ObjectOutputStream omaze = new ObjectOutputStream(fmaze);
+				omaze.writeObject(nlevels);
+				omaze.writeObject(mazeX);
+				for (int n = 0; n < nlevels; n++){
+					int[][] writeLevel = levels[n].getLevel();
+					omaze.writeObject(writeLevel);
+				}
+				omaze.flush();
+				omaze.close();
+		 
+			   }catch(Exception ex){
+				   ex.printStackTrace();
+			   }
+			
+			System.out.println("Save Completed!");
+			btnr[1].setSelected(false);
+		}
+		
 		//Loading a file
 		if (k == 2){
-//		    JFileChooser chooser = new JFileChooser();
-//		    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-//		        "JPG & GIF Images", "jpg", "gif");
-//		    chooser.setFileFilter(filter);
-//		    int returnVal = chooser.showOpenDialog(this);
-//		    if(returnVal == JFileChooser.APPROVE_OPTION) {
-//		       System.out.println("You chose to open this file: " +
-//		            chooser.getSelectedFile().getName());
-//		    }
+			System.out.println("Start Loading...");
 			
-			
-			System.out.println("Start Loading...");			
+			chooser.setFileFilter(filter);
+			chooser.setCurrentDirectory(file);
+			returnVal = chooser.showOpenDialog(Editor.this);
+			toFront();
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				file = chooser.getSelectedFile();		    	
+				System.out.println(chooser.getSelectedFile().getName() + " loaded.");
+		    }
+				
 			try{	 
-				FileInputStream fmaze = new FileInputStream("mazes\\test.maze");
+				FileInputStream fmaze = new FileInputStream(file);
 				ObjectInputStream omaze = new ObjectInputStream(fmaze);
 				
 				nlevels = (int) omaze.readObject();
@@ -463,34 +508,10 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 				ex.printStackTrace();
 			}
 			
-			System.out.println(mazeX + " " + nlevels + " ");
+			System.out.println("De grootte van de levels is " + mazeX + " en de maze bevat " + nlevels + " levels.");
 			System.out.println("Loading Completed!");
 			btnr[2].setSelected(false);
 			
-		}
-		
-		//Saving a file
-		if (k == 1){
-			System.out.println("Starting Save");
-			
-			try{
-				FileOutputStream fmaze = new FileOutputStream("mazes\\test.maze");
-				ObjectOutputStream omaze = new ObjectOutputStream(fmaze);
-				omaze.writeObject(nlevels);
-				omaze.writeObject(mazeX);
-				for (int n = 0; n < nlevels; n++){
-					int[][] writeLevel = levels[n].getLevel();
-					omaze.writeObject(writeLevel);
-				}
-				omaze.flush();
-				omaze.close();
-		 
-			   }catch(Exception ex){
-				   ex.printStackTrace();
-			   }
-			
-			System.out.println("Save Completed!");
-			btnr[1].setSelected(false);
 		}
 
 		//The Exit button on the bottom-right
@@ -549,6 +570,19 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 			level.level[X][Y-1] = 7;
 		}
 		
+		
+		//Player Spawn button
+		if (SwingUtilities.isLeftMouseButton(me) && btn[26].selected == true && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
+			for(int a = 0; a < mazeX; a++){
+				for(int b = 0; b < mazeX; b++){
+					if (level.level[a][b] == 97){
+						level.level[a][b] = 0;
+					}			
+				}
+			}
+			level.level[X][Y-1] = 97;
+		}
+		
 		//The Void draw button
 		if (btn[27].selected == true && level != levels[0] && squareX >= 0 && squareX < mazeX && squareY < mazeX && squareY >= 0){
 			//System.out.println("Hier kan getekent worden");
@@ -572,7 +606,6 @@ public class Editor extends JFrame implements GLEventListener, MouseListener, Mo
 		if(btn[0].selected || SwingUtilities.isRightMouseButton(me) || btn[27].selected){
 			mousePressed(me);
 		}
-		
 	}
 	
 	@Override

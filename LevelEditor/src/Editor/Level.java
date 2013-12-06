@@ -20,7 +20,7 @@ public class Level implements Serializable{
 	protected float buttonSize;
 	protected int lineWidth = 2;
 	private Texture[] textureMaze;
-	private int nTiles = 8; //this is the number of different tiles currently present in the maze
+	private int nTiles = 102; //this is the number of different tiles currently present in the maze
 	
 	//creates a level with borders at the edges of the matrix
 	public Level(int x, int y){
@@ -40,7 +40,7 @@ public class Level implements Serializable{
 	//draws the level on the specified location
 	public void draw(GL gl, float startx, float starty, float width, float height){
 		
-		textureMaze = new Texture[nTiles+1];
+		textureMaze = new Texture[nTiles];
 		
 		//Loading all the textures in the maze
 		try {
@@ -54,6 +54,7 @@ public class Level implements Serializable{
 			textureMaze[6] = TextureIO.newTexture(new File("img\\StairsL.png"), false);
 			textureMaze[7] = TextureIO.newTexture(new File("img\\TorchW.png"), false);
 			textureMaze[8] = TextureIO.newTexture(new File("img\\StairsH.png"), false);
+			textureMaze[97] = TextureIO.newTexture(new File("img\\Player.png"), false);
 			//textureMaze[9] = TextureIO.newTexture(new File("img\\StairsH.png"), false);
 		} 
 		catch (Exception e) {
@@ -68,7 +69,7 @@ public class Level implements Serializable{
 				//Drawing the floor color
 				//Also be sure to maintain the background color of the floor for specific textures, making it not white
 				if ((level[i][j] == 0 && textureMaze[0] == null) || level[i][j] == 2 || level[i][j] == 3 || level[i][j] == 5
-						|| level[i][j] == 7){
+						|| level[i][j] == 7 || level[i][j] == 97){
 					gl.glColor4f(150/255f, 73/255f, 37/255f, 1);
 				}
 				
@@ -93,7 +94,7 @@ public class Level implements Serializable{
 				}
 				
 				//drawing textures if present
-				for (int k = 0; k < nTiles+1; k++){
+				for (int k = 0; k < nTiles; k++){
 					
 					if (level[i][j] == k){
 						if (textureMaze[k] != null) {
@@ -206,8 +207,6 @@ public class Level implements Serializable{
 	public int[][] getLevel() {
 		return level;
 	}
-	
-	public static void main(String[] args) { /* Not Used */ }
 
 	public void setX(int x) {
 		this.x = x;
